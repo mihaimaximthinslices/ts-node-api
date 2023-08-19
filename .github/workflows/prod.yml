@@ -1,6 +1,6 @@
 name: push-into-prod
 on:
-  push:
+  pull_request:
     branches:
       - main
 
