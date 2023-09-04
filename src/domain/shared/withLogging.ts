@@ -57,6 +57,6 @@ class ContractWithLogging<T> {
 }
 
 export function withLogging<T>(repository: Contract<T>, logger: Logger, contractName: string): T {
-  const repositoryWithLogging = new ContractWithLogging(repository, logger, contractName)
-  return repositoryWithLogging.getContractWithLogging()
+  const contractWithLogging = new ContractWithLogging(repository, logger, contractName)
+  return contractWithLogging.getContractWithLogging()
 }
