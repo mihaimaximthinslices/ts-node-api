@@ -1,6 +1,6 @@
 import express from 'express'
 import { getCurrentTimeMessage, saySomething } from './wadap'
-import { makeHandler } from './main/api/factories'
+import { makeHandler } from './main/api/factories/handlers'
 
 const app = express()
 app.get('/hello', (_req, res) => {
