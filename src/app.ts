@@ -1,5 +1,6 @@
 import express from 'express'
 import { getCurrentTimeMessage, saySomething } from './wadap'
+import { makeHandler } from './main/api/factories'
 
 const app = express()
 app.get('/hello', (_req, res) => {
@@ -13,4 +14,7 @@ app.get('/time', (_req, res) => {
     currentTime: getCurrentTimeMessage(() => new Date()),
   })
 })
+
+app.get('/posts', makeHandler('getPostsHandler'))
+
 export default app

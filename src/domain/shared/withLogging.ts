@@ -1,62 +1,54 @@
-import { Contract } from './contract'
 import { Logger } from './logger'
 
-class ContractWithLogging<T> {
-  constructor(
-    private contract: Contract<T>,
-    private logger: Logger,
-    private contractName: string,
-  ) {}
+type WithLogging = (
+  logger: Logger,
+  component: string,
+  handler: string,
+) => <Params extends unknown[], Return>(
+  func: (...args: Params) => Return | Promise<Return>,
+  inputMapper?: (...args: Params) => unknown,
+  outputMapper?: (args: Return) => unknown,
+) => (...args: Params) => Promise<Return>
 
-  protected wrapMethod<K extends keyof T>(
-    methodName: K,
-    method: T[K],
-  ): (...args: unknown[]) => Promise<unknown | void> {
-    return (...args: unknown[]) => {
-      this.logger.info(`Invoking ${this.contractName}.${methodName as string} with ${JSON.stringify(args, null, 2)}`)
-      const result = (method as (...args: unknown[]) => Promise<unknown | void>)(...args)
-      if (result instanceof Promise) {
-        return result
-          .then((data) => {
-            this.logger.info(
-              `${this.contractName}.${methodName as string} returned successfully with response ${JSON.stringify(
-                data,
-                null,
-                2,
-              )}`,
-            )
-            return data
-          })
-          .catch((error) => {
-            this.logger.error(`${this.contractName}.${methodName as string} failed: ${error}`)
-            throw error
-          })
-      } else {
-        this.logger.info(
-          `${this.contractName}.${methodName as string} returned successfully with response ${JSON.stringify(
-            result,
-            null,
-            2,
-          )}`,
-        )
-        return result
-      }
-    }
-  }
-
-  getContractWithLogging(): T {
-    const contract = this.contract
-    const wrappedContract: Record<string, unknown> = {}
-    for (const key in contract) {
-      if (typeof this.contract[key] === 'function') {
-        wrappedContract[key as string] = this.wrapMethod(key, this.contract[key] as T[keyof T])
-      }
-    }
-    return wrappedContract as T
+const getJSONStringified = (response: unknown) => {
+  try {
+    return 'with ' + JSON.stringify(response, null, 2)
+  } catch (err) {
+    return ''
   }
 }
+export const withLoggingFunction: WithLogging =
+  (logger, component, handler) =>
+  (func) =>
+  async (...args) => {
+    try {
+      logger.info(`${component} ${handler} was invoked ${getJSONStringified(args)}`)
 
-export function withLogging<T>(repository: Contract<T>, logger: Logger, contractName: string): T {
-  const contractWithLogging = new ContractWithLogging(repository, logger, contractName)
-  return contractWithLogging.getContractWithLogging()
+      const result = await func(...args)
+
+      logger.info(`${component} ${handler} completed successfully ${getJSONStringified(result)}`)
+
+      return result
+    } catch (err) {
+      logger.error(`${component} ${handler} failed`)
+      throw err
+    }
+  }
+
+export function withLogging<T>(target: T, logger: Logger, component: string, handler: string): T {
+  if (typeof target === 'function') {
+    return withLoggingFunction(logger, component, handler)(target as (...args: unknown[]) => unknown) as T
+  } else {
+    const wrappedTarget: Record<string, unknown> = {}
+    for (const key in target) {
+      if (typeof target[key] === 'function') {
+        wrappedTarget[key as string] = withLoggingFunction(
+          logger,
+          handler,
+          key,
+        )(target[key] as (...args: unknown[]) => unknown)
+      }
+    }
+    return wrappedTarget as T
+  }
 }

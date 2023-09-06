@@ -1,6 +1,5 @@
-import { Contract } from '../shared'
 import { Post } from '../entities/Post'
 
-export type PostRepository = Contract<{
+export type PostRepository = {
   getPostsByUserId: (userId: number) => Promise<Post[]>
-}>
+}
