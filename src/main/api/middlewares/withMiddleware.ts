@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 export const withMiddleware = <T>(
   middleware: Array<(req: Request, res: Response, next: () => void, error: (err: Error) => Error) => void>,
-  handler: (params: T, req: Request, res: Response) => Promise<void>,
+  handler: (params: T, req: Request, res: Response) => Promise<unknown>,
 ) => {
   return async (params: T, req: Request, res: Response) => {
     for (const mw of middleware) {

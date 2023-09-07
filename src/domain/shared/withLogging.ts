@@ -34,7 +34,7 @@ export const withLoggingFunction: WithLogging =
 
       const result = await func(...args)
 
-      logger.info(`${component} ${handler} completed successfully ${getJSONStringifiedResponse(result)}`)
+      logger.info(`${component} ${handler} completed ${result !== undefined ? getJSONStringifiedResponse(result) : ''}`)
 
       return result
     } catch (err) {

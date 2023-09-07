@@ -17,7 +17,7 @@ export const getPostsHandler: RouteHandlerConstructor<Params> = withErrorHandlin
       user: req.validateUserMiddlewareResponse!.user,
     })
 
-    res.status(200).json(response)
+    return res.status(200).json(response)
   }),
   sharedErrorHandler,
 )
