@@ -10,9 +10,17 @@ type WithLogging = (
   outputMapper?: (args: Return) => unknown,
 ) => (...args: Params) => Promise<Return>
 
-const getJSONStringified = (response: unknown) => {
+const getJSONStringifiedRequest = (response: unknown) => {
   try {
-    return 'with ' + JSON.stringify(response, null, 2)
+    return 'with => ' + JSON.stringify(response, null, 2)
+  } catch (err) {
+    return ''
+  }
+}
+
+const getJSONStringifiedResponse = (response: unknown) => {
+  try {
+    return 'with response => ' + JSON.stringify(response, null, 2)
   } catch (err) {
     return ''
   }
@@ -22,11 +30,11 @@ export const withLoggingFunction: WithLogging =
   (func) =>
   async (...args) => {
     try {
-      logger.info(`${component} ${handler} was invoked ${getJSONStringified(args)}`)
+      logger.info(`${component} ${handler} was invoked ${getJSONStringifiedRequest(args)}`)
 
       const result = await func(...args)
 
-      logger.info(`${component} ${handler} completed successfully ${getJSONStringified(result)}`)
+      logger.info(`${component} ${handler} completed successfully ${getJSONStringifiedResponse(result)}`)
 
       return result
     } catch (err) {

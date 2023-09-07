@@ -1,30 +1,23 @@
 import { UseCase, UseCaseConstructor } from '../shared'
-import { Post } from '../entities'
-import { PostRepository, UserRepository } from '../repositories'
+import { Post, User } from '../entities'
+import { PostRepository } from '../repositories'
 
 type Params = {
-  userRepository: UserRepository
   postRepository: PostRepository
 }
 
 type Request = {
-  email: string
+  user: User
 }
 
 export type GetPostsUsecase = UseCase<Request, Post[]>
 
 export const getPostsUsecase: UseCaseConstructor<Params, Request, Post[]> = (params) => {
-  const { userRepository, postRepository } = params
+  const { postRepository } = params
   return async (request) => {
-    const { email } = request
+    const { user } = request
 
-    const user = await userRepository.getByEmail(email)
-
-    if (!user) {
-      throw new Error('User not found')
-    }
-
-    const posts = postRepository.getPostsByUserId(user.id)
+    const posts = await postRepository.getPostsByUserId(user.id)
 
     return posts
   }

@@ -1,6 +1,6 @@
-import { Logger } from '../../domain/shared'
+import { Logger } from '../../../domain/shared'
 
-export const logger: Logger = {
+const logger: Logger = {
   error(message: string): void {
     console.error(message)
   },
@@ -8,3 +8,5 @@ export const logger: Logger = {
     console.info(message)
   },
 }
+
+export const makeLogger = () => logger

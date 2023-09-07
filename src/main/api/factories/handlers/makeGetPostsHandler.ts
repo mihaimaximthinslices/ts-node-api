@@ -1,17 +1,15 @@
 import { withLogging } from '../../../../domain/shared'
-import { JSUserRepository } from '../../../../repository/JSUserRepository'
-import { logger } from '../../../logger/consoleLogger'
-import { JSPostRepository } from '../../../../repository/JSPostRepository'
-import { getPostsUsecase } from '../../../../domain/usecases/getPosts'
+import { JSPostRepository } from '../../../../repository'
+import { getPostsUsecase } from '../../../../domain/usecases'
 import { getPostsHandler } from '../../handlers'
+import { makeLogger } from '../../logger/consoleLogger'
 
 export async function makeGetPostsHandler() {
-  const JSUserRepositoryWithLogging = withLogging(JSUserRepository, logger, 'Repository', 'UserRepository')
+  const logger = makeLogger()
   const JSPostRepositoryWithLogging = withLogging(JSPostRepository, logger, 'Repository', 'PostRepository')
 
   const usecase = getPostsUsecase({
     postRepository: JSPostRepositoryWithLogging,
-    userRepository: JSUserRepositoryWithLogging,
   })
 
   const handler = getPostsHandler({

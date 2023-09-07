@@ -1,24 +1,23 @@
-import { RouteHandlerConstructor } from '../types'
 import { Request, Response } from 'express'
-import { GetPostsUsecase } from '../../../domain/usecases/getPosts'
+import { GetPostsUsecase } from '../../../domain/usecases'
+import { sharedErrorHandler, withErrorHandling } from '../errorHandlers'
+import { withMiddleware } from '../middlewares'
+import { RouteHandlerConstructor } from '../middlewares'
+import { useValidateUserMiddleware } from '../middlewares'
+
 type Params = {
   usecase: GetPostsUsecase
 }
-export const getPostsHandler: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, res: Response) => {
-    try {
-      const { email } = req.params
 
-      const { usecase } = params
+export const getPostsHandler: RouteHandlerConstructor<Params> = withErrorHandling(
+  withMiddleware([useValidateUserMiddleware], async (params: Params, req: Request, res: Response) => {
+    const { usecase } = params
 
-      const response = await usecase({
-        email: email as string,
-      })
+    const response = await usecase({
+      user: req.user!,
+    })
 
-      res.status(200).json(response)
-    } catch (err) {
-      res.status(404).json({
-        error: 'Email notfound',
-      })
-    }
-  }
+    res.status(200).json(response)
+  }),
+  sharedErrorHandler,
+)
