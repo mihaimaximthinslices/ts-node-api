@@ -21,5 +21,7 @@ export const validateUserMiddleware: RouteHandlerConstructor<Params> =
       email: email as string,
     })
 
-    req.user = user
+    req.validateUserMiddlewareResponse = {
+      user,
+    }
   }

@@ -14,7 +14,7 @@ export const getPostsHandler: RouteHandlerConstructor<Params> = withErrorHandlin
     const { usecase } = params
 
     const response = await usecase({
-      user: req.user!,
+      user: req.validateUserMiddlewareResponse!.user,
     })
 
     res.status(200).json(response)
