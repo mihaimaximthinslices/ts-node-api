@@ -1,22 +1,20 @@
 import { withLogging } from '../../../../domain/shared'
-import { JSPostRepository } from '../../../../repository'
 import { getPostsUsecase } from '../../../../domain/usecases'
 import { getPostsHandler } from '../../handlers'
-import { makeLogger } from '../../logger'
-import { withErrorHandling } from '../../errorHandlers'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
+import { withErrorHandling } from '../errorHandlers'
 
 export async function makeGetPostsHandler(params?: MakeHandlerParams) {
-  const logger = makeLogger()
+  const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory } = params!
 
-  const JSPostRepositoryWithLogging = withLogging(JSPostRepository, logger, 'Repository', 'PostRepository')
+  const PostRepository = repositoryFactory.makePostRepository()
+
+  const PostRepositoryWithLogging = withLogging(PostRepository, logger, 'Repository', 'PostRepository')
 
   const usecase = getPostsUsecase({
-    postRepository: JSPostRepositoryWithLogging,
+    postRepository: PostRepositoryWithLogging,
   })
-
-  const { middlewareFactory, errorHandlerFactory } = params!
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 

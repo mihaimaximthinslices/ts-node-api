@@ -1,7 +1,7 @@
-import app from './app'
+import prodServer from './prodServer'
 
 const PORT = 3001
 
-app.listen(PORT, () => {
+prodServer.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
 })

@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { EntityNotFound, InvalidInputError, UnauthorizedError } from '../../../domain/errors'
+import { EntityNotFound, InvalidInputError, UnauthorizedError } from '../../../../domain/errors'
 
 export const makeSharedErrorHandler = (err: Error, res: Response) => {
   if (err instanceof InvalidInputError) {
