@@ -1,8 +1,13 @@
 import { makeGetPostsHandler } from './makeGetPostsHandler'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { RequestHandlerFactory } from './types'
+import { MiddlewareFactory, middlewareFactory } from '../middlewares'
 
-const requestHandlerFactories: Record<string, (_req: Request, _res: Response) => Promise<RequestHandler>> = {
+export type MakeHandlerParams = {
+  middlewareFactory?: MiddlewareFactory
+}
+
+const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerParams) => Promise<RequestHandler>> = {
   getPostsHandler: makeGetPostsHandler,
 }
 
@@ -13,10 +18,15 @@ export const requestHandlerFactory: RequestHandlerFactory = {
     if (!makeHandlerFunction) throw new Error('Invalid handler')
 
     return async (req: Request, res: Response, next: NextFunction) => {
-      const handler = await makeHandlerFunction(req, res)
+      const handler = await makeHandlerFunction({
+        middlewareFactory,
+      })
 
       return handler(req, res, next)
     }
+  },
+  makeMiddleware: (name: string) => {
+    return middlewareFactory.make(name)
   },
   getHandlerNames: () => {
     return Object.keys(requestHandlerFactories)
