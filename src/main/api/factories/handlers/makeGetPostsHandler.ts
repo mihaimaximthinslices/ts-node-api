@@ -3,6 +3,8 @@ import { JSPostRepository } from '../../../../repository'
 import { getPostsUsecase } from '../../../../domain/usecases'
 import { getPostsHandler } from '../../handlers'
 import { makeLogger } from '../../logger'
+import { sharedErrorHandler, withErrorHandling } from '../../errorHandlers'
+import { useValidateUserMiddleware, withMiddleware } from '../../middlewares'
 
 export async function makeGetPostsHandler() {
   const logger = makeLogger()
@@ -13,11 +15,20 @@ export async function makeGetPostsHandler() {
     postRepository: JSPostRepositoryWithLogging,
   })
 
-  const handler = getPostsHandler({
-    usecase,
-  })
-
-  const decoratedHandler = withLogging(handler, logger, 'Handler', 'getPostsHandler')
+  const decoratedHandler = withLogging(
+    withErrorHandling(
+      withMiddleware(
+        [useValidateUserMiddleware],
+        getPostsHandler({
+          usecase,
+        }),
+      ),
+      sharedErrorHandler,
+    ),
+    logger,
+    'Handler',
+    'getPostsHandler',
+  )
 
   return decoratedHandler
 }

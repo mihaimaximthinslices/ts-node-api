@@ -1,14 +1,10 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 
 export const withErrorHandling =
-  <T>(
-    handler: (params: T, req: Request, res: Response) => Promise<void>,
-    errorHandler: (err: Error, res: Response) => void,
-  ) =>
-  (params: T) =>
-  async (req: Request, res: Response) => {
+  (handler: RequestHandler, errorHandler: (err: Error, res: Response) => void) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await handler(params, req, res)
+      await handler(req, res, next)
     } catch (err) {
       errorHandler(err as Error, res)
     }
