@@ -1,21 +1,12 @@
 import express from 'express'
-import { requestHandlerFactory } from './main/api/factories/handlers'
-import { getCurrentTimeMessage, saySomething } from './wadap'
+import { setupServer } from './main/api/server'
+import { makeRequestHandlerFactory } from './main/api/factories/handlers'
 
-const app = express()
+const server = express()
 
-app.get('/hello', (_req, res) => {
-  return res.status(200).json({
-    message: saySomething('hello'),
-  })
+setupServer({
+  server,
+  requestHandlerFactory: makeRequestHandlerFactory(),
 })
 
-app.get('/time', (_req, res) => {
-  return res.status(200).json({
-    currentTime: getCurrentTimeMessage(() => new Date()),
-  })
-})
-
-app.get('/posts', requestHandlerFactory.make('getPostsHandler'))
-
-export default app
+export default server

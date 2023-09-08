@@ -1,3 +1,3 @@
 export * from './makeValidateUserMiddleware'
-export * from './middlewareFactory'
-export * from './types'
+export * from './makeMiddlewareFactory'
+export * from './MiddlewareFactory'

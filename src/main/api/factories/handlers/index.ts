@@ -1,3 +1,3 @@
-export * from './requestHandlerFactory'
-export * from './types'
+export * from './makeRequestHandlerFactory'
+export * from './RequestHandlerFactory'
 export * from './makeGetPostsHandler'

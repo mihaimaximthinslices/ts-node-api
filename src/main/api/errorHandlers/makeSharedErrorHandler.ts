@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import { EntityNotFound, InvalidInputError, UnauthorizedError } from '../../../domain/errors'
 
-export const sharedErrorHandler = (err: Error, res: Response) => {
+export const makeSharedErrorHandler = (err: Error, res: Response) => {
   if (err instanceof InvalidInputError) {
     res.status(400).json({ error: err.message })
   } else if (err instanceof EntityNotFound) {

@@ -3,9 +3,10 @@ import { JSPostRepository } from '../../../../repository'
 import { getPostsUsecase } from '../../../../domain/usecases'
 import { getPostsHandler } from '../../handlers'
 import { makeLogger } from '../../logger'
-import { sharedErrorHandler, withErrorHandling } from '../../errorHandlers'
+import { withErrorHandling } from '../../errorHandlers'
 import { withMiddleware } from '../../middlewares'
-import { MakeHandlerParams } from './requestHandlerFactory'
+import { MakeHandlerParams } from './makeRequestHandlerFactory'
+
 export async function makeGetPostsHandler(params?: MakeHandlerParams) {
   const logger = makeLogger()
 
@@ -15,11 +16,13 @@ export async function makeGetPostsHandler(params?: MakeHandlerParams) {
     postRepository: JSPostRepositoryWithLogging,
   })
 
-  const { middlewareFactory } = params!
+  const { middlewareFactory, errorHandlerFactory } = params!
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 
-  const decoratedHandler = withLogging(
+  const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
+
+  return withLogging(
     withErrorHandling(
       withMiddleware(
         [validateUserMiddleware],
@@ -33,6 +36,4 @@ export async function makeGetPostsHandler(params?: MakeHandlerParams) {
     'Handler',
     'getPostsHandler',
   )
-
-  return decoratedHandler
 }
