@@ -23,5 +23,11 @@ export const setupServer = (params: Params) => {
     })
   })
 
+  server.post('/login', requestHandlerFactory.make('loginHandler'))
+
+  server.post('/register', requestHandlerFactory.make('postUserHandler'))
+
+  server.post('/logout', requestHandlerFactory.make('logoutHandler'))
+
   server.get('/posts', requestHandlerFactory.make('getPostsHandler'))
 }

@@ -1,26 +1,21 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { MiddlewareFactory } from './MiddlewareFactory'
 import { makeValidateUserMiddleware } from './makeValidateUserMiddleware'
-import { ErrorHandlerFactory, makeErrorHandlerFactory } from '../errorHandlers'
-import { makeJSRepositoryFactory } from '../repositories/makeRepositoryFactory'
-import { makeConsoleLogger } from '../loggers'
+import { ErrorHandlerFactory } from '../errorHandlers'
 import { RepositoryFactory } from '../repositories/RepositoryFactory'
-import { Logger } from '../../../../domain/shared'
+import { HashMethods, Logger } from '../../../../domain/shared'
 
 export type MakeMiddlewareParams = {
   errorHandlerFactory: ErrorHandlerFactory
   repositoryFactory: RepositoryFactory
   logger: Logger
+  hashMethods: HashMethods
 }
 const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<RequestHandler>> = {
   validateUserMiddleware: makeValidateUserMiddleware,
 }
 
-export const makeMiddlewareFactory = (): MiddlewareFactory => {
-  const errorHandlerFactory = makeErrorHandlerFactory()
-  const repositoryFactory = makeJSRepositoryFactory()
-  const logger = makeConsoleLogger()
-
+export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): MiddlewareFactory => {
   return {
     make: (name: string) => {
       const makeHandlerFunction = middlewareFactories[name]
@@ -29,9 +24,7 @@ export const makeMiddlewareFactory = (): MiddlewareFactory => {
 
       return async (req: Request, res: Response, next: NextFunction) => {
         const handler = await makeHandlerFunction({
-          repositoryFactory,
-          logger,
-          errorHandlerFactory,
+          ...dependencies,
         })
 
         return handler(req, res, next)

@@ -1,3 +1,5 @@
 export * from './makeRequestHandlerFactory'
 export * from './RequestHandlerFactory'
 export * from './makeGetPostsHandler'
+export * from './makeLoginHandler'
+export * from './makeLogoutHandler'

@@ -16,6 +16,14 @@ export class UnauthorizedError extends Error {
   }
 }
 
+export class DuplicateEntityError extends Error {
+  constructor(entity: string) {
+    super()
+    this.name = 'DuplicateEntityError'
+    this.message = `${entity} already exists`
+  }
+}
+
 export class EntityNotFound extends Error {
   constructor(entity: string) {
     super()

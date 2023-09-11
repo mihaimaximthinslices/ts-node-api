@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { ValidateUserUsecase } from '../../../domain/usecases'
 import { RouteHandlerConstructor } from './types'
-import { InvalidInputError } from '../../../domain/errors'
+import { UnauthorizedError } from '../../../domain/errors'
 
 type Params = {
   usecase: ValidateUserUsecase
@@ -9,16 +9,18 @@ type Params = {
 
 export const validateUserMiddleware: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, _res: Response) => {
-    const { email } = req.query
+    const sessionUser = req.session.user
 
-    if (!email) {
-      throw new InvalidInputError('Email is required')
+    if (!sessionUser) {
+      throw new UnauthorizedError('User')
     }
+
+    const { email } = sessionUser
 
     const { usecase } = params
 
     const user = await usecase({
-      email: email as string,
+      email,
     })
 
     req.validateUserMiddlewareResponse = {

@@ -1,23 +1,34 @@
 import { makeGetPostsHandler } from './makeGetPostsHandler'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
-import { RequestHandlerFactory } from './RequestHandlerFactory'
+import { MakeRequestHandlerFactory, RequestHandlerFactory } from './RequestHandlerFactory'
 import { MiddlewareFactory } from '../middlewares'
 import { ErrorHandlerFactory } from '../errorHandlers'
-import { Logger } from '../../../../domain/shared'
+import { DateGenerator, HashMethods, Logger, UuidGenerator } from '../../../../domain/shared'
 import { RepositoryFactory } from '../repositories/RepositoryFactory'
+import { makeLoginHandler } from './makeLoginHandler'
+import { makeLogoutHandler } from './makeLogoutHandler'
+import { makePostUserHandler } from './makePostUserHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
   errorHandlerFactory: ErrorHandlerFactory
   repositoryFactory: RepositoryFactory
   logger: Logger
+  dateGenerator: DateGenerator
+  uuidGenerator: UuidGenerator
+  hashMethods: HashMethods
 }
 
 const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerParams) => Promise<RequestHandler>> = {
   getPostsHandler: makeGetPostsHandler,
+  loginHandler: makeLoginHandler,
+  logoutHandler: makeLogoutHandler,
+  postUserHandler: makePostUserHandler,
 }
 
-export const makeRequestHandlerFactory = (dependencies: MakeHandlerParams): RequestHandlerFactory => {
+export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (
+  dependencies: MakeHandlerParams,
+): RequestHandlerFactory => {
   return {
     make: (name: string) => {
       const makeHandlerFunction = requestHandlerFactories[name]

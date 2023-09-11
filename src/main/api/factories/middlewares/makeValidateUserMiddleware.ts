@@ -4,7 +4,7 @@ import { validateUserMiddleware } from '../../middlewares'
 import { MakeMiddlewareParams } from './makeMiddlewareFactory'
 
 export async function makeValidateUserMiddleware(params?: MakeMiddlewareParams) {
-  const { logger, repositoryFactory } = params!
+  const { logger, repositoryFactory, hashMethods } = params!
 
   const UserRepository = repositoryFactory.makeUserRepository()
 
@@ -12,6 +12,7 @@ export async function makeValidateUserMiddleware(params?: MakeMiddlewareParams) 
 
   const usecase = validateUserUsecase({
     userRepository: UserRepositoryWithLogging,
+    hashMethods,
   })
 
   const handler = validateUserMiddleware({
