@@ -8,6 +8,10 @@ import { RepositoryFactory } from '../repositories/RepositoryFactory'
 import { makeLoginHandler } from './makeLoginHandler'
 import { makeLogoutHandler } from './makeLogoutHandler'
 import { makePostUserHandler } from './makePostUserHandler'
+import { DomainEventEmitter } from '../../../../domain/events'
+import { makePostPostHandler } from './makePostPostHandler'
+import { makeGetPostHandler } from './makeGetPostHandler'
+import { makePostCommentHandler } from './makePostCommentHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
@@ -17,6 +21,7 @@ export type MakeHandlerParams = {
   dateGenerator: DateGenerator
   uuidGenerator: UuidGenerator
   hashMethods: HashMethods
+  domainEventEmitter: DomainEventEmitter
 }
 
 const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerParams) => Promise<RequestHandler>> = {
@@ -24,6 +29,9 @@ const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerPar
   loginHandler: makeLoginHandler,
   logoutHandler: makeLogoutHandler,
   postUserHandler: makePostUserHandler,
+  postPostHandler: makePostPostHandler,
+  getPostHandler: makeGetPostHandler,
+  postCommentHandler: makePostCommentHandler,
 }
 
 export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (

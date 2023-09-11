@@ -30,4 +30,10 @@ export const setupServer = (params: Params) => {
   server.post('/logout', requestHandlerFactory.make('logoutHandler'))
 
   server.get('/posts', requestHandlerFactory.make('getPostsHandler'))
+
+  server.post('/posts', requestHandlerFactory.make('postPostHandler'))
+
+  server.get('/posts/:postId', requestHandlerFactory.make('getPostHandler'))
+
+  server.post('/posts/:postId/comments', requestHandlerFactory.make('postCommentHandler'))
 }

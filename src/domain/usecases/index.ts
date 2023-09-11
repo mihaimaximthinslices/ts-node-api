@@ -1,3 +1,5 @@
 export * from './validateUser'
 export * from './getPosts'
 export * from './createUser'
+export * from './createPost'
+export * from './getPost'

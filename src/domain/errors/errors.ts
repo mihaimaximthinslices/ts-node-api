@@ -25,10 +25,10 @@ export class DuplicateEntityError extends Error {
 }
 
 export class EntityNotFound extends Error {
-  constructor(entity: string) {
+  constructor(entity: string, id?: string) {
     super()
 
     this.name = `EntityNotFound`
-    this.message = `${entity} was not found`
+    this.message = `${entity} ${id ? 'with id ' + id : ''} was not found`
   }
 }

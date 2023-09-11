@@ -5,7 +5,15 @@ import { withErrorHandling } from '../errorHandlers'
 import { postUserHandler } from '../../handlers'
 
 export async function makePostUserHandler(params?: MakeHandlerParams) {
-  const { errorHandlerFactory, logger, repositoryFactory, uuidGenerator, dateGenerator, hashMethods } = params!
+  const {
+    errorHandlerFactory,
+    logger,
+    repositoryFactory,
+    uuidGenerator,
+    dateGenerator,
+    hashMethods,
+    domainEventEmitter,
+  } = params!
 
   const UserRepository = repositoryFactory.makeUserRepository()
 
@@ -18,6 +26,7 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
     uuidGenerator,
     dateGenerator,
     hashMethods,
+    domainEventEmitter,
   })
 
   return withLogging(

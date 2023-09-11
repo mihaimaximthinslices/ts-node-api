@@ -4,15 +4,19 @@ import { makeValidateUserMiddleware } from './makeValidateUserMiddleware'
 import { ErrorHandlerFactory } from '../errorHandlers'
 import { RepositoryFactory } from '../repositories/RepositoryFactory'
 import { HashMethods, Logger } from '../../../../domain/shared'
+import { DomainEventEmitter } from '../../../../domain/events'
+import { makeGetPostMiddleware } from './makeGetPostMiddleware'
 
 export type MakeMiddlewareParams = {
   errorHandlerFactory: ErrorHandlerFactory
   repositoryFactory: RepositoryFactory
   logger: Logger
   hashMethods: HashMethods
+  domainEventEmitter: DomainEventEmitter
 }
 const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<RequestHandler>> = {
   validateUserMiddleware: makeValidateUserMiddleware,
+  getPostMiddleware: makeGetPostMiddleware,
 }
 
 export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): MiddlewareFactory => {

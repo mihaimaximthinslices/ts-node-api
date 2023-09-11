@@ -4,7 +4,7 @@ import session from 'express-session'
 import genFunc from 'connect-pg-simple'
 import { setupServer } from './main/api/setupServer'
 import { MakeHandlerParams, makeRequestHandlerFactory } from './main/api/factories/handlers'
-import { makeErrorHandlerFactory } from './main/api/factories/errorHandlers'
+import { ErrorHandlerFactory, makeErrorHandlerFactory } from './main/api/factories/errorHandlers'
 import { makePrismaRepositoryFactory } from './main/api/factories/repositories/makeRepositoryFactory'
 import { makeMiddlewareFactory, MakeMiddlewareParams } from './main/api/factories/middlewares'
 import { makeConsoleLogger } from './main/api/factories/loggers'
@@ -12,6 +12,9 @@ import { User } from './domain/entities'
 import { makeDateGenerator } from './main/api/factories/generators'
 import { makeUuidGenerator } from './main/api/factories/generators/uuidGenerator'
 import { makeHashMethods } from './main/api/factories/hashMethods/makeHashMethods'
+import { RepositoryFactory } from './main/api/factories/repositories/RepositoryFactory'
+import { DateGenerator, HashMethods, Logger, UuidGenerator } from './domain/shared'
+import { ConcreteEventEmitter } from './main/api/factories/events/makeDomainEventEmitter'
 
 const prodServer = express()
 
@@ -40,7 +43,16 @@ declare module 'express-session' {
   }
 }
 
-const dependencies = {
+export interface AllDependencies {
+  errorHandlerFactory: ErrorHandlerFactory
+  repositoryFactory: RepositoryFactory
+  logger: Logger
+  dateGenerator: DateGenerator
+  uuidGenerator: UuidGenerator
+  hashMethods: HashMethods
+}
+
+const dependencies: AllDependencies = {
   errorHandlerFactory: makeErrorHandlerFactory(),
   repositoryFactory: makePrismaRepositoryFactory(),
   logger: makeConsoleLogger(),
@@ -49,11 +61,14 @@ const dependencies = {
   hashMethods: makeHashMethods(),
 }
 
-const middlewareFactoryDependencies: MakeMiddlewareParams = { ...dependencies }
+const domainEventEmitter = new ConcreteEventEmitter(dependencies)
+
+const middlewareFactoryDependencies: MakeMiddlewareParams = { ...dependencies, domainEventEmitter }
 
 const requestHandlerFactoryDependencies: MakeHandlerParams = {
   ...dependencies,
   middlewareFactory: makeMiddlewareFactory(middlewareFactoryDependencies),
+  domainEventEmitter: domainEventEmitter,
 }
 
 setupServer({

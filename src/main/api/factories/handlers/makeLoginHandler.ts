@@ -3,7 +3,7 @@ import { withLogging } from '../../../../domain/shared'
 import { validateUserUsecase } from '../../../../domain/usecases'
 import { withErrorHandling } from '../errorHandlers'
 
-import { loginHandler } from '../../handlers/loginHandler'
+import { loginHandler } from '../../handlers'
 
 export async function makeLoginHandler(params?: MakeHandlerParams) {
   const { errorHandlerFactory, logger, repositoryFactory, hashMethods } = params!

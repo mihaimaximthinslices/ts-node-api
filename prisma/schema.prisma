@@ -17,21 +17,34 @@ model session {
 }
 
 model User {
-  id        String   @id @map("id")
+  id        String    @id @map("id")
   username  String
-  email     String   @unique
+  email     String    @unique
   password  String
   posts     Post[]
   createdAt DateTime
   updatedAt DateTime
+  Comment   Comment[]
 }
 
 model Post {
-  id          String   @id @map("id")
+  id          String    @id @map("id")
   title       String
   description String
   userId      String // Reference to the User model with a string ID
-  user        User     @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
   createdAt   DateTime
   updatedAt   DateTime
+  Comment     Comment[]
+}
+
+model Comment {
+  id        String   @id @map("id")
+  text      String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime
+  updatedAt DateTime
 }
