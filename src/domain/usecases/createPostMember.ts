@@ -23,7 +23,7 @@ export type CreatePostMemberUsecase = UseCase<Request, PostMember>
 export const createPostMemberUsecase: UseCaseConstructor<Params, Request, PostMember> = (params) => {
   const { uuidGenerator, dateGenerator, postMemberRepository, userRepository } = params
   return async (request) => {
-    let { user, post, role, newUserEmail } = request
+    const { user, post, role, newUserEmail } = request
 
     const newUser = await getUser(newUserEmail)
 
