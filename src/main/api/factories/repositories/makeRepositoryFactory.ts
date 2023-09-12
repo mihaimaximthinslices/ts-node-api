@@ -1,7 +1,7 @@
 import { RepositoryFactory } from './RepositoryFactory'
-import { CommentRepository, PostRepository, UserRepository } from '../../../../domain/repositories'
+import { PostCommentRepository, PostRepository, UserRepository } from '../../../../domain/repositories'
 import { Post, User } from '../../../../domain/entities'
-import { Comment } from '../../../../domain/entities'
+import { PostComment } from '../../../../domain/entities'
 import { PostMember, PrismaClient } from '@prisma/client'
 import { PostMemberRepository } from '../../../../domain/repositories/PostMemberRepository'
 
@@ -76,22 +76,22 @@ const prismaUserRepository: UserRepository = {
   },
 }
 
-const prismaCommentRepository: CommentRepository = {
-  async getById(id: string): Promise<Comment | null> {
+const prismaPostCommentRepository: PostCommentRepository = {
+  async getById(id: string): Promise<PostComment | null> {
     const comment = await prisma.comment.findUnique({
       where: { id },
     })
     return comment ?? null
   },
 
-  async getByPostId(postId: string): Promise<Comment[]> {
+  async getByPostId(postId: string): Promise<PostComment[]> {
     const comments = await prisma.comment.findMany({
       where: { postId },
     })
     return comments
   },
 
-  async save(comment: Comment): Promise<void> {
+  async save(comment: PostComment): Promise<void> {
     const { id, ...commentData } = comment
 
     await prisma.comment.upsert({
@@ -143,7 +143,7 @@ export const makePrismaRepositoryFactory = (): RepositoryFactory => {
   return {
     makeUserRepository: () => prismaUserRepository,
     makePostRepository: () => prismaPostRepository,
-    makeCommentRepository: () => prismaCommentRepository,
+    makePostCommentRepository: () => prismaPostCommentRepository,
     makePostMemberRepository: () => prismaPostMemberRepository,
   }
 }

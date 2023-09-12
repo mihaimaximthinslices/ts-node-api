@@ -3,6 +3,7 @@ import { User } from '../entities'
 import { PostRepository } from '../repositories'
 import { DomainEventEmitter } from '../events'
 import { Post } from '../entities'
+import { DomainPermissionContext } from '../permissions/permissionContext'
 
 type Params = {
   uuidGenerator: UuidGenerator
@@ -12,6 +13,7 @@ type Params = {
 }
 
 type Request = {
+  permissionContext: DomainPermissionContext
   user: User
   title: string
   description: string
@@ -21,7 +23,7 @@ export type CreatePostUsecase = UseCase<Request, Post>
 export const createPostUsecase: UseCaseConstructor<Params, Request, Post> = (params) => {
   const { uuidGenerator, dateGenerator, domainEventEmitter, postRepository } = params
   return async (request) => {
-    const { title, description, user } = request
+    const { title, description, user, permissionContext } = request
 
     const id = uuidGenerator.next()
     const NOW = dateGenerator.now()
@@ -37,7 +39,7 @@ export const createPostUsecase: UseCaseConstructor<Params, Request, Post> = (par
 
     await postRepository.save(post)
 
-    await domainEventEmitter.emitPostCreated(user, post)
+    await domainEventEmitter.emitPostCreated(permissionContext, user, post)
 
     return post
   }

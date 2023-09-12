@@ -1,20 +1,20 @@
 import { withLogging } from '../../../../domain/shared'
-import { getCommentUsecase } from '../../../../domain/usecases'
+import { getPostCommentUsecase } from '../../../../domain/usecases'
 import { MakeMiddlewareParams } from './makeMiddlewareFactory'
 import { getCommentMiddleware } from '../../middlewares/getCommentMiddleware'
 
-export async function makeGetCommentMiddleware(params?: MakeMiddlewareParams) {
+export async function makeGetPostCommentMiddleware(params?: MakeMiddlewareParams) {
   const { logger, repositoryFactory } = params!
 
   const commentRepositoryWithLogging = withLogging(
-    repositoryFactory.makeCommentRepository(),
+    repositoryFactory.makePostCommentRepository(),
     logger,
     'Repository',
     'CommentRepository',
   )
 
-  const usecase = getCommentUsecase({
-    commentRepository: commentRepositoryWithLogging,
+  const usecase = getPostCommentUsecase({
+    postCommentRepository: commentRepositoryWithLogging,
   })
 
   const handler = getCommentMiddleware({

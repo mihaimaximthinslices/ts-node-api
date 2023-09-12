@@ -2,10 +2,12 @@ import { withLogging } from '../../../../domain/shared'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
-import { getCommentHandler } from '../../handlers'
+import { getPostCommentHandler } from '../../handlers'
 
 export async function makeGetCommentHandler(params?: MakeHandlerParams) {
   const { middlewareFactory, errorHandlerFactory, logger } = params!
+
+  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 
@@ -15,7 +17,7 @@ export async function makeGetCommentHandler(params?: MakeHandlerParams) {
 
   const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
 
-  const getCommentMiddleware = middlewareFactory!.make('getCommentMiddleware')
+  const getPostCommentMiddleware = middlewareFactory!.make('getPostCommentMiddleware')
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
@@ -23,13 +25,14 @@ export async function makeGetCommentHandler(params?: MakeHandlerParams) {
     withErrorHandling(
       withMiddleware(
         [
+          addPermissionContextMiddleware,
           validateUserMiddleware,
           getPostMiddleware,
           getPostMemberMiddleware,
           validatePostMemberMiddleware,
-          getCommentMiddleware,
+          getPostCommentMiddleware,
         ],
-        getCommentHandler(),
+        getPostCommentHandler(),
       ),
       sharedErrorHandler,
     ),

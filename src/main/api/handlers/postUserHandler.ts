@@ -19,6 +19,7 @@ export const postUserHandler: RouteHandlerConstructor<Params> =
     const { email, password, username } = registrationSchema.parse(req.body)
 
     const response = await usecase({
+      permissionContext: req.permissionContext!,
       email,
       password,
       username,

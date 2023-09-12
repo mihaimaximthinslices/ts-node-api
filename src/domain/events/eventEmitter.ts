@@ -1,8 +1,14 @@
-import { Post, Comment, User, PostMember } from '../entities'
+import { Post, PostComment, User, PostMember } from '../entities'
+import { DomainPermissionContext } from '../permissions/permissionContext'
 
 export interface DomainEventEmitter {
-  emitUserCreated(user: User): void
-  emitPostCreated(user: User, post: Post): Promise<void>
-  emitPostDeleted(user: User, post: Post, postMembers: PostMember[]): Promise<void>
-  emitCommentCreated(comment: Comment): void
+  emitUserCreated(permissionContext: DomainPermissionContext, user: User): void
+  emitPostCreated(permissionContext: DomainPermissionContext, user: User, post: Post): Promise<void>
+  emitPostDeleted(
+    permissionContext: DomainPermissionContext,
+    user: User,
+    post: Post,
+    postMembers: PostMember[],
+  ): Promise<void>
+  emitCommentCreated(permissionContext: DomainPermissionContext, comment: PostComment): void
 }

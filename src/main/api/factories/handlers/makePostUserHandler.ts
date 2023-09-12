@@ -3,6 +3,7 @@ import { withLogging } from '../../../../domain/shared'
 import { createUserUsecase } from '../../../../domain/usecases'
 import { withErrorHandling } from '../errorHandlers'
 import { postUserHandler } from '../../handlers'
+import { withMiddleware } from '../../middlewares'
 
 export async function makePostUserHandler(params?: MakeHandlerParams) {
   const {
@@ -13,6 +14,7 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
     dateGenerator,
     hashMethods,
     domainEventEmitter,
+    middlewareFactory,
   } = params!
 
   const UserRepository = repositoryFactory.makeUserRepository()
@@ -20,6 +22,8 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
   const UserRepositoryWithLogging = withLogging(UserRepository, logger, 'Repository', 'UserRepository')
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
+
+  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
   const usecase = createUserUsecase({
     userRepository: UserRepositoryWithLogging,
@@ -31,9 +35,12 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
 
   return withLogging(
     withErrorHandling(
-      postUserHandler({
-        usecase,
-      }),
+      withMiddleware(
+        [addPermissionContextMiddleware],
+        postUserHandler({
+          usecase,
+        }),
+      ),
       sharedErrorHandler,
     ),
     logger,

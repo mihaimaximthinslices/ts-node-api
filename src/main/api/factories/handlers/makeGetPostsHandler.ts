@@ -15,6 +15,7 @@ export async function makeGetPostsHandler(params?: MakeHandlerParams) {
   const usecase = getPostsUsecase({
     postRepository: PostRepositoryWithLogging,
   })
+  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 
@@ -23,7 +24,7 @@ export async function makeGetPostsHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [validateUserMiddleware],
+        [addPermissionContextMiddleware, validateUserMiddleware],
         getPostsHandler({
           usecase,
         }),

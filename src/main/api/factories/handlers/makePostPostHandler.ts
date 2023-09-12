@@ -25,6 +25,8 @@ export async function makePostPostHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
+  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
+
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 
   const usecase = createPostUsecase({
@@ -37,7 +39,7 @@ export async function makePostPostHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [validateUserMiddleware],
+        [addPermissionContextMiddleware, validateUserMiddleware],
         postPostHandler({
           usecase,
         }),

@@ -3,6 +3,7 @@ import { User } from '../entities'
 import { DuplicateEntityError } from '../errors'
 import { UserRepository } from '../repositories'
 import { DomainEventEmitter } from '../events'
+import { DomainPermissionContext } from '../permissions/permissionContext'
 
 type Params = {
   userRepository: UserRepository
@@ -13,6 +14,7 @@ type Params = {
 }
 
 type Request = {
+  permissionContext: DomainPermissionContext
   email: string
   username: string
   password: string
@@ -22,7 +24,7 @@ export type CreateUserUsecase = UseCase<Request, void>
 export const createUserUsecase: UseCaseConstructor<Params, Request, void> = (params) => {
   const { userRepository, uuidGenerator, dateGenerator, hashMethods, domainEventEmitter } = params
   return async (request) => {
-    const { email, password, username } = request
+    const { email, password, username, permissionContext } = request
 
     const id = uuidGenerator.next()
     const NOW = dateGenerator.now()
@@ -46,6 +48,6 @@ export const createUserUsecase: UseCaseConstructor<Params, Request, void> = (par
 
     await userRepository.save(newUser)
 
-    domainEventEmitter.emitUserCreated(newUser)
+    domainEventEmitter.emitUserCreated(permissionContext, newUser)
   }
 }

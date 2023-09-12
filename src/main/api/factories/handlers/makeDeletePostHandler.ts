@@ -1,29 +1,12 @@
-import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withLogging } from '../../../../domain/shared'
-import { withErrorHandling } from '../errorHandlers'
 import { withMiddleware } from '../../middlewares'
-import { createCommentUsecase } from '../../../../domain/usecases/createPostComment'
-import { postPostCommentHandler } from '../../handlers/postPostCommentHandler'
+import { MakeHandlerParams } from './makeRequestHandlerFactory'
+import { withErrorHandling } from '../errorHandlers'
+import { deletePostHandler } from '../../handlers/deletePostHandler'
+import { removePostUsecase } from '../../../../domain/usecases/removePost'
 
-export async function makePostCommentHandler(params?: MakeHandlerParams) {
-  const {
-    errorHandlerFactory,
-    logger,
-    uuidGenerator,
-    dateGenerator,
-    domainEventEmitter,
-    repositoryFactory,
-    middlewareFactory,
-  } = params!
-
-  const commentRepositoryWithLogging = withLogging(
-    repositoryFactory.makePostCommentRepository(),
-    logger,
-    'Repository',
-    'CommentRepository',
-  )
-
-  const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
+export async function makeDeletePostHandler(params?: MakeHandlerParams) {
+  const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory, domainEventEmitter } = params!
 
   const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
@@ -35,11 +18,18 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
 
   const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
 
-  const usecase = createCommentUsecase({
-    uuidGenerator,
-    dateGenerator,
+  const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
+
+  const postRepositoryWithLogging = withLogging(
+    repositoryFactory.makePostRepository(),
+    logger,
+    'Repository',
+    'PostRepository',
+  )
+
+  const usecase = removePostUsecase({
+    postRepository: postRepositoryWithLogging,
     domainEventEmitter: domainEventEmitter,
-    postCommentRepository: commentRepositoryWithLogging,
   })
 
   return withLogging(
@@ -52,7 +42,7 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
           getPostMemberMiddleware,
           validatePostMemberMiddleware,
         ],
-        postPostCommentHandler({
+        deletePostHandler({
           usecase,
         }),
       ),
@@ -60,6 +50,6 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
     ),
     logger,
     'Handler',
-    'postCommentHandler',
+    'deletePostHandler',
   )
 }

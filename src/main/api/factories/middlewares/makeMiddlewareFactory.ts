@@ -6,9 +6,10 @@ import { RepositoryFactory } from '../repositories/RepositoryFactory'
 import { HashMethods, Logger } from '../../../../domain/shared'
 import { DomainEventEmitter } from '../../../../domain/events'
 import { makeGetPostMiddleware } from './makeGetPostMiddleware'
-import { makeGetCommentMiddleware } from './makeGetCommentMiddleware'
+import { makeGetPostCommentMiddleware } from './makeGetPostCommentMiddleware'
 import { makeGetPostMemberMiddleware } from './makeGetPostMemberMiddleware'
 import { makeValidatePostMemberMiddleware } from './makeValidatePostMemberMiddleware'
+import { makeAddPermissionContextMiddleware } from './makeAddPermissionContextMiddleware'
 
 export type MakeMiddlewareParams = {
   errorHandlerFactory: ErrorHandlerFactory
@@ -18,9 +19,10 @@ export type MakeMiddlewareParams = {
   domainEventEmitter: DomainEventEmitter
 }
 const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<RequestHandler>> = {
+  addPermissionContextMiddleware: makeAddPermissionContextMiddleware,
   validateUserMiddleware: makeValidateUserMiddleware,
   getPostMiddleware: makeGetPostMiddleware,
-  getCommentMiddleware: makeGetCommentMiddleware,
+  getPostCommentMiddleware: makeGetPostCommentMiddleware,
   getPostMemberMiddleware: makeGetPostMemberMiddleware,
   validatePostMemberMiddleware: makeValidatePostMemberMiddleware,
 }
@@ -30,7 +32,7 @@ export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): Middl
     make: (name: string) => {
       const makeHandlerFunction = middlewareFactories[name]
 
-      if (!makeHandlerFunction) throw new Error('Invalid middleware!')
+      if (!makeHandlerFunction) throw new Error(`Invalid middleware ${name}`)
 
       return async (req: Request, res: Response, next: NextFunction) => {
         const handler = await makeHandlerFunction({

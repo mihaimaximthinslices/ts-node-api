@@ -5,6 +5,7 @@ import { PostMemberRepository } from '../repositories/PostMemberRepository'
 import { permissionService } from '../permissions/permissionService'
 import { UserRepository } from '../repositories'
 import { EntityNotFound } from '../errors'
+import { DomainPermissionContext } from '../permissions/permissionContext'
 type Params = {
   uuidGenerator: UuidGenerator
   dateGenerator: DateGenerator
@@ -13,6 +14,7 @@ type Params = {
 }
 
 type Request = {
+  permissionContext: DomainPermissionContext
   user: User
   post: Post
   newUserEmail: string
@@ -23,7 +25,7 @@ export type CreatePostMemberUsecase = UseCase<Request, PostMember>
 export const createPostMemberUsecase: UseCaseConstructor<Params, Request, PostMember> = (params) => {
   const { uuidGenerator, dateGenerator, postMemberRepository, userRepository } = params
   return async (request) => {
-    const { user, post, role, newUserEmail } = request
+    const { user, post, role, newUserEmail, permissionContext } = request
 
     const newUser = await getUser(newUserEmail)
 
@@ -41,7 +43,7 @@ export const createPostMemberUsecase: UseCaseConstructor<Params, Request, PostMe
       updatedAt: NOW,
     }
 
-    permissionService.canAddPostMember(user, post, postMembers, newMember, newUser)
+    permissionService.canAddPostMember(permissionContext, user, post, postMembers, newMember, newUser)
 
     await postMemberRepository.save(newMember)
 

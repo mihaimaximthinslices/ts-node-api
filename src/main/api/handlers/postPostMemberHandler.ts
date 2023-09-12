@@ -14,6 +14,7 @@ export const postPostMemberHandler: RouteHandlerConstructor<Params> =
     const { email } = createPostMemberSchema.parse(req.body)
 
     const response = await usecase({
+      permissionContext: req.permissionContext!,
       user: req.validateUserMiddlewareResponse!.user,
       post: req.getPostMiddlewareResponse!.post,
       role: 'GUEST',

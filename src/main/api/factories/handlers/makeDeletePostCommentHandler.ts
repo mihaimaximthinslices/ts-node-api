@@ -2,10 +2,11 @@ import { withLogging } from '../../../../domain/shared'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
-import { getPostHandler } from '../../handlers/getPostHandler'
+import { removePostCommentUsecase } from '../../../../domain/usecases/removePostComment'
+import { deletePostCommentHandler } from '../../handlers/deletePostComment'
 
-export async function makeGetPostHandler(params?: MakeHandlerParams) {
-  const { middlewareFactory, errorHandlerFactory, logger } = params!
+export async function makeDeletePostCommentHandler(params?: MakeHandlerParams) {
+  const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory } = params!
   const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
@@ -16,7 +17,20 @@ export async function makeGetPostHandler(params?: MakeHandlerParams) {
 
   const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
 
+  const getPostCommentMiddleware = middlewareFactory!.make('getPostCommentMiddleware')
+
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
+
+  const postCommentRepositoryWithLogging = withLogging(
+    repositoryFactory.makePostCommentRepository(),
+    logger,
+    'Repository',
+    'PostCommentRepository',
+  )
+
+  const usecase = removePostCommentUsecase({
+    postCommentRepository: postCommentRepositoryWithLogging,
+  })
 
   return withLogging(
     withErrorHandling(
@@ -27,13 +41,16 @@ export async function makeGetPostHandler(params?: MakeHandlerParams) {
           getPostMiddleware,
           getPostMemberMiddleware,
           validatePostMemberMiddleware,
+          getPostCommentMiddleware,
         ],
-        getPostHandler(),
+        deletePostCommentHandler({
+          usecase,
+        }),
       ),
       sharedErrorHandler,
     ),
     logger,
     'Handler',
-    'getPostHandler',
+    'deletePostCommentHandler',
   )
 }

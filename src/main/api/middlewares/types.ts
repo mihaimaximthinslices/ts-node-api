@@ -1,9 +1,11 @@
 import { RequestHandler } from 'express'
-import { Post, User, Comment, PostMember } from '../../../domain/entities'
+import { Post, User, PostComment, PostMember } from '../../../domain/entities'
+import { DomainPermissionContext } from '../../../domain/permissions/permissionContext'
 
 declare global {
   namespace Express {
     interface Request {
+      permissionContext: DomainPermissionContext
       validateUserMiddlewareResponse?: {
         user: User
       }
@@ -11,7 +13,7 @@ declare global {
         post: Post
       }
       getCommentMiddleware?: {
-        comment: Comment
+        comment: PostComment
       }
       getPostMembersMiddlewareResponse?: {
         postMembers: PostMember[]

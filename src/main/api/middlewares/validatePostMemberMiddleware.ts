@@ -15,6 +15,7 @@ export const validatePostMemberMiddleware: RouteHandlerConstructor<Params> =
     const postMembers = req.getPostMembersMiddlewareResponse!.postMembers
 
     await usecase({
+      permissionContext: req.permissionContext!,
       user,
       post,
       postMembers,

@@ -18,6 +18,7 @@ export const getCommentMiddleware: RouteHandlerConstructor<Params> =
     const { usecase } = params
 
     const comment = await usecase({
+      permissionContext: req.permissionContext!,
       user: req.validateUserMiddlewareResponse!.user,
       post: req.getPostMiddlewareResponse!.post,
       postMembers: req.getPostMembersMiddlewareResponse!.postMembers,

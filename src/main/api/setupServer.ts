@@ -35,6 +35,8 @@ export const setupServer = (params: Params) => {
 
   server.get('/posts/:postId', requestHandlerFactory.make('getPostHandler'))
 
+  server.delete('/posts/:postId', requestHandlerFactory.make('deletePostHandler'))
+
   server.post('/posts/:postId/comments', requestHandlerFactory.make('postCommentHandler'))
 
   server.post('/posts/:postId/members', requestHandlerFactory.make('postPostMemberHandler'))
@@ -42,4 +44,6 @@ export const setupServer = (params: Params) => {
   server.get('/posts/:postId/comments', requestHandlerFactory.make('getCommentsHandler'))
 
   server.get('/posts/:postId/comments/:commentId', requestHandlerFactory.make('getCommentHandler'))
+
+  server.delete('/posts/:postId/comments/:commentId', requestHandlerFactory.make('deletePostCommentHandler'))
 }

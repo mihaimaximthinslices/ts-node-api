@@ -6,11 +6,12 @@ type Params = {
   usecase: GetCommentsUsecase
 }
 
-export const getCommentsHandler: RouteHandlerConstructor<Params> =
+export const getPostCommentsHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params
 
     const response = await usecase({
+      permissionContext: req.permissionContext!,
       user: req.validateUserMiddlewareResponse!.user,
       post: req.getPostMiddlewareResponse!.post,
       postMembers: req.getPostMembersMiddlewareResponse!.postMembers,

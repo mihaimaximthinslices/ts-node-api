@@ -14,6 +14,7 @@ export const postPostHandler: RouteHandlerConstructor<Params> =
     const { title, description } = createPostSchema.parse(req.body)
 
     const response = await usecase({
+      permissionContext: req.permissionContext!,
       title,
       description,
       user: req.validateUserMiddlewareResponse!.user,

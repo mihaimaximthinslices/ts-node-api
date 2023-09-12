@@ -15,6 +15,8 @@ import { makePostCommentHandler } from './makePostCommentHandler'
 import { makeGetCommentHandler } from './makeGetCommentHandler'
 import { makeGetCommentsHandler } from './makeGetCommentsHandler'
 import { makePostPostMemberHandler } from './makePostPostMemberHandler'
+import { makeDeletePostHandler } from './makeDeletePostHandler'
+import { makeDeletePostCommentHandler } from './makeDeletePostCommentHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
@@ -38,6 +40,8 @@ const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerPar
   getCommentHandler: makeGetCommentHandler,
   getCommentsHandler: makeGetCommentsHandler,
   postPostMemberHandler: makePostPostMemberHandler,
+  deletePostHandler: makeDeletePostHandler,
+  deletePostCommentHandler: makeDeletePostCommentHandler,
 }
 
 export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (
