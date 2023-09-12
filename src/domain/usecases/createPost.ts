@@ -37,7 +37,7 @@ export const createPostUsecase: UseCaseConstructor<Params, Request, Post> = (par
 
     await postRepository.save(post)
 
-    domainEventEmitter.emitPostCreated(post)
+    await domainEventEmitter.emitPostCreated(user, post)
 
     return post
   }

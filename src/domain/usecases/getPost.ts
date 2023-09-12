@@ -1,5 +1,5 @@
 import { UseCase, UseCaseConstructor } from '../shared'
-import { Post } from '../entities'
+import { Post, User } from '../entities'
 import { PostRepository } from '../repositories'
 import { EntityNotFound } from '../errors'
 
@@ -8,6 +8,7 @@ type Params = {
 }
 
 type Request = {
+  user: User
   postId: string
 }
 

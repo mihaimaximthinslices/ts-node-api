@@ -1,22 +1,23 @@
 import { RouteHandlerConstructor } from '../middlewares'
 import { Request, Response } from 'express'
-import { createCommentSchema } from '../../shared/validationSchemas'
-import { CreateCommentUsecase } from '../../../domain/usecases/createComment'
+import { createPostMemberSchema } from '../../shared/validationSchemas'
+import { CreatePostMemberUsecase } from '../../../domain/usecases/createPostMember'
 
 type Params = {
-  usecase: CreateCommentUsecase
+  usecase: CreatePostMemberUsecase
 }
 
-export const postCommentHandler: RouteHandlerConstructor<Params> =
+export const postPostMemberHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params
 
-    const { text } = createCommentSchema.parse(req.body)
+    const { email } = createPostMemberSchema.parse(req.body)
 
     const response = await usecase({
       user: req.validateUserMiddlewareResponse!.user,
       post: req.getPostMiddlewareResponse!.post,
-      text,
+      role: 'GUEST',
+      newUserEmail: email,
     })
 
     return res.status(201).json(response)

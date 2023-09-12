@@ -14,3 +14,7 @@ export const createPostSchema = z.object({
 export const createCommentSchema = z.object({
   text: z.string().min(12),
 })
+
+export const createPostMemberSchema = z.object({
+  email: z.string().email(),
+})

@@ -2,7 +2,8 @@ import { RepositoryFactory } from './RepositoryFactory'
 import { CommentRepository, PostRepository, UserRepository } from '../../../../domain/repositories'
 import { Post, User } from '../../../../domain/entities'
 import { Comment } from '../../../../domain/entities'
-import { PrismaClient } from '@prisma/client'
+import { PostMember, PrismaClient } from '@prisma/client'
+import { PostMemberRepository } from '../../../../domain/repositories/PostMemberRepository'
 
 const prisma = new PrismaClient()
 const prismaPostRepository: PostRepository = {
@@ -110,10 +111,39 @@ const prismaCommentRepository: CommentRepository = {
   },
 }
 
+const prismaPostMemberRepository: PostMemberRepository = {
+  async getByPostId(postId: string): Promise<PostMember[]> {
+    const postMembers = await prisma.postMember.findMany({
+      where: { postId },
+    })
+    return postMembers
+  },
+
+  async save(postMember: PostMember): Promise<void> {
+    const { id, ...postMemberData } = postMember
+
+    await prisma.postMember.upsert({
+      where: { id },
+      update: postMemberData,
+      create: {
+        id,
+        ...postMemberData,
+      },
+    })
+  },
+
+  async delete(postMemberId: string): Promise<void> {
+    await prisma.postMember.delete({
+      where: { id: postMemberId },
+    })
+  },
+}
+
 export const makePrismaRepositoryFactory = (): RepositoryFactory => {
   return {
     makeUserRepository: () => prismaUserRepository,
     makePostRepository: () => prismaPostRepository,
     makeCommentRepository: () => prismaCommentRepository,
+    makePostMemberRepository: () => prismaPostMemberRepository,
   }
 }

@@ -1,11 +1,20 @@
 import { withLogging } from '../../../../domain/shared'
+import { getCommentsUsecase } from '../../../../domain/usecases'
+import { getCommentsHandler } from '../../handlers'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
-import { getPostHandler } from '../../handlers/getPostHandler'
 
-export async function makeGetPostHandler(params?: MakeHandlerParams) {
-  const { middlewareFactory, errorHandlerFactory, logger } = params!
+export async function makeGetCommentsHandler(params?: MakeHandlerParams) {
+  const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory } = params!
+
+  const CommentRepository = repositoryFactory.makeCommentRepository()
+
+  const CommentRepositoryWithLogging = withLogging(CommentRepository, logger, 'Repository', 'CommentRepository')
+
+  const usecase = getCommentsUsecase({
+    commentRepository: CommentRepositoryWithLogging,
+  })
 
   const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
 
@@ -21,12 +30,14 @@ export async function makeGetPostHandler(params?: MakeHandlerParams) {
     withErrorHandling(
       withMiddleware(
         [validateUserMiddleware, getPostMiddleware, getPostMemberMiddleware, validatePostMemberMiddleware],
-        getPostHandler(),
+        getCommentsHandler({
+          usecase,
+        }),
       ),
       sharedErrorHandler,
     ),
     logger,
     'Handler',
-    'getPostHandler',
+    'getCommentsHandler',
   )
 }

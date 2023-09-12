@@ -6,6 +6,9 @@ import { RepositoryFactory } from '../repositories/RepositoryFactory'
 import { HashMethods, Logger } from '../../../../domain/shared'
 import { DomainEventEmitter } from '../../../../domain/events'
 import { makeGetPostMiddleware } from './makeGetPostMiddleware'
+import { makeGetCommentMiddleware } from './makeGetCommentMiddleware'
+import { makeGetPostMemberMiddleware } from './makeGetPostMemberMiddleware'
+import { makeValidatePostMemberMiddleware } from './makeValidatePostMemberMiddleware'
 
 export type MakeMiddlewareParams = {
   errorHandlerFactory: ErrorHandlerFactory
@@ -17,6 +20,9 @@ export type MakeMiddlewareParams = {
 const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<RequestHandler>> = {
   validateUserMiddleware: makeValidateUserMiddleware,
   getPostMiddleware: makeGetPostMiddleware,
+  getCommentMiddleware: makeGetCommentMiddleware,
+  getPostMemberMiddleware: makeGetPostMemberMiddleware,
+  validatePostMemberMiddleware: makeValidatePostMemberMiddleware,
 }
 
 export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): MiddlewareFactory => {

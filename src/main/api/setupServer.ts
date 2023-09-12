@@ -36,4 +36,10 @@ export const setupServer = (params: Params) => {
   server.get('/posts/:postId', requestHandlerFactory.make('getPostHandler'))
 
   server.post('/posts/:postId/comments', requestHandlerFactory.make('postCommentHandler'))
+
+  server.post('/posts/:postId/members', requestHandlerFactory.make('postPostMemberHandler'))
+
+  server.get('/posts/:postId/comments', requestHandlerFactory.make('getCommentsHandler'))
+
+  server.get('/posts/:postId/comments/:commentId', requestHandlerFactory.make('getCommentHandler'))
 }

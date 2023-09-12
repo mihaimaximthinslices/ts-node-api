@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { Post, User } from '../../../domain/entities'
+import { Post, User, Comment, PostMember } from '../../../domain/entities'
 
 declare global {
   namespace Express {
@@ -7,8 +7,14 @@ declare global {
       validateUserMiddlewareResponse?: {
         user: User
       }
-      getPostMiddleware?: {
+      getPostMiddlewareResponse?: {
         post: Post
+      }
+      getCommentMiddleware?: {
+        comment: Comment
+      }
+      getPostMembersMiddlewareResponse?: {
+        postMembers: PostMember[]
       }
     }
   }

@@ -12,6 +12,9 @@ import { DomainEventEmitter } from '../../../../domain/events'
 import { makePostPostHandler } from './makePostPostHandler'
 import { makeGetPostHandler } from './makeGetPostHandler'
 import { makePostCommentHandler } from './makePostCommentHandler'
+import { makeGetCommentHandler } from './makeGetCommentHandler'
+import { makeGetCommentsHandler } from './makeGetCommentsHandler'
+import { makePostPostMemberHandler } from './makePostPostMemberHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
@@ -32,6 +35,9 @@ const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerPar
   postPostHandler: makePostPostHandler,
   getPostHandler: makeGetPostHandler,
   postCommentHandler: makePostCommentHandler,
+  getCommentHandler: makeGetCommentHandler,
+  getCommentsHandler: makeGetCommentsHandler,
+  postPostMemberHandler: makePostPostMemberHandler,
 }
 
 export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (

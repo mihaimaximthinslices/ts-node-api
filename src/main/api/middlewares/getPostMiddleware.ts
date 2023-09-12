@@ -18,10 +18,11 @@ export const getPostMiddleware: RouteHandlerConstructor<Params> =
     const { usecase } = params
 
     const post = await usecase({
+      user: req.validateUserMiddlewareResponse!.user,
       postId,
     })
 
-    req.getPostMiddleware = {
+    req.getPostMiddlewareResponse = {
       post,
     }
   }

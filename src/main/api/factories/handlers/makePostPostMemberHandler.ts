@@ -2,25 +2,24 @@ import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withLogging } from '../../../../domain/shared'
 import { withErrorHandling } from '../errorHandlers'
 import { withMiddleware } from '../../middlewares'
-import { createCommentUsecase } from '../../../../domain/usecases/createComment'
-import { postCommentHandler } from '../../handlers/postCommentHandler'
+import { createPostMemberUsecase } from '../../../../domain/usecases/createPostMember'
+import { postPostMemberHandler } from '../../handlers/postPostMemberHandler'
 
-export async function makePostCommentHandler(params?: MakeHandlerParams) {
-  const {
-    errorHandlerFactory,
-    logger,
-    uuidGenerator,
-    dateGenerator,
-    domainEventEmitter,
-    repositoryFactory,
-    middlewareFactory,
-  } = params!
+export async function makePostPostMemberHandler(params?: MakeHandlerParams) {
+  const { errorHandlerFactory, logger, uuidGenerator, dateGenerator, repositoryFactory, middlewareFactory } = params!
 
-  const commentRepositoryWithLogging = withLogging(
-    repositoryFactory.makeCommentRepository(),
+  const userRepositoryWithLogging = withLogging(
+    repositoryFactory.makeUserRepository(),
     logger,
     'Repository',
-    'CommentRepository',
+    'UserRepository',
+  )
+
+  const postMemberRepositoryWithLogging = withLogging(
+    repositoryFactory.makePostMemberRepository(),
+    logger,
+    'Repository',
+    'PostMemberRepository',
   )
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
@@ -33,18 +32,18 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
 
   const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
 
-  const usecase = createCommentUsecase({
+  const usecase = createPostMemberUsecase({
     uuidGenerator,
     dateGenerator,
-    domainEventEmitter: domainEventEmitter,
-    commentRepository: commentRepositoryWithLogging,
+    userRepository: userRepositoryWithLogging,
+    postMemberRepository: postMemberRepositoryWithLogging,
   })
 
   return withLogging(
     withErrorHandling(
       withMiddleware(
         [validateUserMiddleware, getPostMiddleware, getPostMemberMiddleware, validatePostMemberMiddleware],
-        postCommentHandler({
+        postPostMemberHandler({
           usecase,
         }),
       ),
@@ -52,6 +51,6 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
     ),
     logger,
     'Handler',
-    'postCommentHandler',
+    'postPostMemberHandler',
   )
 }
