@@ -3,7 +3,7 @@ import { withLogging } from '../../../../domain/shared'
 import { withErrorHandling } from '../errorHandlers'
 import { withMiddleware } from '../../middlewares'
 import { createPostMemberUsecase } from '../../../../domain/usecases/createPostMember'
-import { postPostMemberHandler } from '../../handlers/postPostMemberHandler'
+import { postPostMemberHandler, postPostMemberHandlerMiddlewares } from '../../handlers/postPostMemberHandler'
 
 export async function makePostPostMemberHandler(params?: MakeHandlerParams) {
   const { errorHandlerFactory, logger, uuidGenerator, dateGenerator, repositoryFactory, middlewareFactory } = params!
@@ -24,13 +24,7 @@ export async function makePostPostMemberHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const middlewares = middlewareFactory.makeMany([
-    'addPermissionContextMiddleware',
-    'validateUserMiddleware',
-    'getPostMiddleware',
-    'getPostMemberMiddleware',
-    'validatePostMemberMiddleware',
-  ])
+  const middlewares = middlewareFactory.makeMany(postPostMemberHandlerMiddlewares)
 
   const usecase = createPostMemberUsecase({
     uuidGenerator,

@@ -2,7 +2,7 @@ import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withLogging } from '../../../../domain/shared'
 import { createUserUsecase } from '../../../../domain/usecases'
 import { withErrorHandling } from '../errorHandlers'
-import { postUserHandler } from '../../handlers'
+import { postUserHandler, postUserHandlerMiddlewares } from '../../handlers'
 import { withMiddleware } from '../../middlewares'
 
 export async function makePostUserHandler(params?: MakeHandlerParams) {
@@ -23,7 +23,7 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
+  const middlewares = middlewareFactory.makeMany(postUserHandlerMiddlewares)
 
   const usecase = createUserUsecase({
     userRepository: UserRepositoryWithLogging,
@@ -36,7 +36,7 @@ export async function makePostUserHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [addPermissionContextMiddleware],
+        middlewares,
         postUserHandler({
           usecase,
         }),

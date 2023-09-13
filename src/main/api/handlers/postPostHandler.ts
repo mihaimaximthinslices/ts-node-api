@@ -6,6 +6,7 @@ import { CreatePostUsecase } from '../../../domain/usecases'
 type Params = {
   usecase: CreatePostUsecase
 }
+export const postPostHandlerMiddlewares = ['addPermissionContextMiddleware', 'validateUserMiddleware']
 
 export const postPostHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {

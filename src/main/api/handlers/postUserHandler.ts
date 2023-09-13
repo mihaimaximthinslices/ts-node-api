@@ -7,7 +7,7 @@ import { registrationSchema } from '../../shared/validationSchemas'
 type Params = {
   usecase: CreateUserUsecase
 }
-
+export const postUserHandlerMiddlewares = ['addPermissionContextMiddleware']
 export const postUserHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params

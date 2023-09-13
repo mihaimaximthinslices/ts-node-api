@@ -1,13 +1,14 @@
 import { withLogging } from '../../../../domain/shared'
 import { updatePostCommentUsecase } from '../../../../domain/usecases/updatePostComment'
-import { patchPostCommentHandler } from '../../handlers/patchPostComment'
+import { patchPostCommentHandler, patchPostCommentHandlerMiddlewares } from '../../handlers/patchPostComment'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
 import { withMiddleware } from '../../middlewares'
+
 export async function makePatchPostCommentHandler(params?: MakeHandlerParams) {
   const { logger, repositoryFactory, errorHandlerFactory, middlewareFactory } = params!
 
-  const middlewares = middlewareFactory.makeMany(['addPermissionContextMiddleware', 'validateUserMiddleware'])
+  const middlewares = middlewareFactory.makeMany(patchPostCommentHandlerMiddlewares)
 
   const postCommentRepositoryWithLogging = withLogging(
     repositoryFactory.makePostCommentRepository(),

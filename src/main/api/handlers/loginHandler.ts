@@ -6,6 +6,7 @@ import { InvalidInputError } from '../../../domain/errors'
 type Params = {
   usecase: ValidateUserUsecase
 }
+export const loginHandlerMiddlewares = ['addPermissionContextMiddleware']
 
 export const loginHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {

@@ -7,6 +7,14 @@ type Params = {
   usecase: CreatePostMemberUsecase
 }
 
+export const postPostMemberHandlerMiddlewares = [
+  'addPermissionContextMiddleware',
+  'validateUserMiddleware',
+  'getPostMiddleware',
+  'getPostMembersMiddleware',
+  'checkPostMembershipMiddleware',
+]
+
 export const postPostMemberHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params

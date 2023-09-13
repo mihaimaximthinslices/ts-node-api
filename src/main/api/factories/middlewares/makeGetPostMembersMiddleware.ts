@@ -3,7 +3,7 @@ import { getPostMembersMiddleware } from '../../middlewares'
 import { MakeMiddlewareParams } from './makeMiddlewareFactory'
 import { getPostMembers } from '../../../../domain/usecases/getPostMembers'
 
-export async function makeGetPostMemberMiddleware(params?: MakeMiddlewareParams) {
+export async function makeGetPostMembersMiddleware(params?: MakeMiddlewareParams) {
   const { logger, repositoryFactory } = params!
 
   const UserRepository = repositoryFactory.makePostMemberRepository()

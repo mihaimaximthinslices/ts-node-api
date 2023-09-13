@@ -6,6 +6,13 @@ import { CreateCommentUsecase } from '../../../domain/usecases/createPostComment
 type Params = {
   usecase: CreateCommentUsecase
 }
+export const postPostCommentHandlerMiddlewares = [
+  'addPermissionContextMiddleware',
+  'validateUserMiddleware',
+  'getPostMiddleware',
+  'getPostMembersMiddleware',
+  'checkPostMembershipMiddleware',
+]
 
 export const postPostCommentHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {

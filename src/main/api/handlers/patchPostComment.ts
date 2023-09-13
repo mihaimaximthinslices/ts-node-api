@@ -6,7 +6,7 @@ import { UpdatePostCommentUsecase } from '../../../domain/usecases/updatePostCom
 type Params = {
   usecase: UpdatePostCommentUsecase
 }
-
+export const patchPostCommentHandlerMiddlewares = ['addPermissionContextMiddleware', 'validateUserMiddleware']
 export const patchPostCommentHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params

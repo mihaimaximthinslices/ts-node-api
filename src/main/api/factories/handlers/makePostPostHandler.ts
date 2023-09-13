@@ -2,7 +2,7 @@ import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withLogging } from '../../../../domain/shared'
 import { createPostUsecase } from '../../../../domain/usecases'
 import { withErrorHandling } from '../errorHandlers'
-import { postPostHandler } from '../../handlers/postPostHandler'
+import { postPostHandler, postPostHandlerMiddlewares } from '../../handlers/postPostHandler'
 import { withMiddleware } from '../../middlewares'
 
 export async function makePostPostHandler(params?: MakeHandlerParams) {
@@ -25,7 +25,7 @@ export async function makePostPostHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const middlewares = middlewareFactory.makeMany(['addPermissionContextMiddleware', 'validateUserMiddleware'])
+  const middlewares = middlewareFactory.makeMany(postPostHandlerMiddlewares)
 
   const usecase = createPostUsecase({
     uuidGenerator,

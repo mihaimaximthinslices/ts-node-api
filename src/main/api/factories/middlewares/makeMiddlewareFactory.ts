@@ -7,8 +7,8 @@ import { HashMethods, Logger } from '../../../../domain/shared'
 import { DomainEventEmitter } from '../../../../domain/events'
 import { makeGetPostMiddleware } from './makeGetPostMiddleware'
 import { makeGetPostCommentMiddleware } from './makeGetPostCommentMiddleware'
-import { makeGetPostMemberMiddleware } from './makeGetPostMemberMiddleware'
-import { makeValidatePostMemberMiddleware } from './makeValidatePostMemberMiddleware'
+import { makeGetPostMembersMiddleware } from './makeGetPostMembersMiddleware'
+import { makeCheckPostMembershipMiddleware } from './makeCheckPostMembershipMiddleware'
 import { makeAddPermissionContextMiddleware } from './makeAddPermissionContextMiddleware'
 
 export type MakeMiddlewareParams = {
@@ -23,8 +23,8 @@ const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Pro
   validateUserMiddleware: makeValidateUserMiddleware,
   getPostMiddleware: makeGetPostMiddleware,
   getPostCommentMiddleware: makeGetPostCommentMiddleware,
-  getPostMemberMiddleware: makeGetPostMemberMiddleware,
-  validatePostMemberMiddleware: makeValidatePostMemberMiddleware,
+  getPostMembersMiddleware: makeGetPostMembersMiddleware,
+  checkPostMembershipMiddleware: makeCheckPostMembershipMiddleware,
 }
 
 export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): MiddlewareFactory => {

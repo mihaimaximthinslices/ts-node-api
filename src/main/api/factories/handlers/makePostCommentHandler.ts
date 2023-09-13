@@ -3,7 +3,7 @@ import { withLogging } from '../../../../domain/shared'
 import { withErrorHandling } from '../errorHandlers'
 import { withMiddleware } from '../../middlewares'
 import { createCommentUsecase } from '../../../../domain/usecases/createPostComment'
-import { postPostCommentHandler } from '../../handlers/postPostCommentHandler'
+import { postPostCommentHandlerMiddlewares, postPostCommentHandler } from '../../handlers/postPostCommentHandler'
 
 export async function makePostCommentHandler(params?: MakeHandlerParams) {
   const {
@@ -25,13 +25,7 @@ export async function makePostCommentHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const middlewares = middlewareFactory.makeMany([
-    'addPermissionContextMiddleware',
-    'validateUserMiddleware',
-    'getPostMiddleware',
-    'getPostMemberMiddleware',
-    'validatePostMemberMiddleware',
-  ])
+  const middlewares = middlewareFactory.makeMany(postPostCommentHandlerMiddlewares)
 
   const usecase = createCommentUsecase({
     uuidGenerator,

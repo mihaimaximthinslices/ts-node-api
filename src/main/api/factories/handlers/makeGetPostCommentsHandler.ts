@@ -1,6 +1,6 @@
 import { withLogging } from '../../../../domain/shared'
 import { getCommentsUsecase } from '../../../../domain/usecases'
-import { getPostCommentsHandler } from '../../handlers'
+import { getPostCommentsHandler, getPostCommentsHandlerMiddlewares } from '../../handlers'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
@@ -16,13 +16,7 @@ export async function makeGetPostCommentsHandler(params?: MakeHandlerParams) {
     commentRepository: CommentRepositoryWithLogging,
   })
 
-  const middlewares = middlewareFactory.makeMany([
-    'addPermissionContextMiddleware',
-    'validateUserMiddleware',
-    'getPostMiddleware',
-    'getPostMemberMiddleware',
-    'validatePostMemberMiddleware',
-  ])
+  const middlewares = middlewareFactory.makeMany(getPostCommentsHandlerMiddlewares)
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 

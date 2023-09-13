@@ -12,9 +12,9 @@ type Request = {
   postMembers: PostMember[]
 }
 
-export type ValidatePostMemberUsecase = UseCase<Request, void>
+export type CheckPostMembershipUsecase = UseCase<Request, void>
 
-export const validatePostMemberUsecase: UseCaseConstructor<Params, Request, void> = (_params) => {
+export const checkPostMembershipUsecase: UseCaseConstructor<Params, Request, void> = (_params) => {
   return async (request) => {
     const { user, post, postMembers, permissionContext } = request
 

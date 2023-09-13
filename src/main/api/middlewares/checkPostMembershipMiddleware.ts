@@ -1,12 +1,12 @@
 import { Request, Response } from 'express'
 import { RouteHandlerConstructor } from './types'
-import { ValidatePostMemberUsecase } from '../../../domain/usecases/validatePostMember'
+import { CheckPostMembershipUsecase } from '../../../domain/usecases/checkPostMember'
 
 type Params = {
-  usecase: ValidatePostMemberUsecase
+  usecase: CheckPostMembershipUsecase
 }
 
-export const validatePostMemberMiddleware: RouteHandlerConstructor<Params> =
+export const checkPostMembershipMiddleware: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, _res: Response) => {
     const { usecase } = params
 

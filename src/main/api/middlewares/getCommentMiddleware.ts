@@ -25,7 +25,7 @@ export const getCommentMiddleware: RouteHandlerConstructor<Params> =
       commentId,
     })
 
-    req.getCommentMiddleware = {
+    req.getPostCommentMiddlewareResponse = {
       comment,
     }
   }

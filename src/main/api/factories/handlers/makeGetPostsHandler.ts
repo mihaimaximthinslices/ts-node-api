@@ -1,6 +1,6 @@
 import { withLogging } from '../../../../domain/shared'
 import { getPostsUsecase } from '../../../../domain/usecases'
-import { getPostsHandler } from '../../handlers'
+import { getPostsHandler, getPostsHandlerMiddlewares } from '../../handlers'
 import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
@@ -16,7 +16,7 @@ export async function makeGetPostsHandler(params?: MakeHandlerParams) {
     postRepository: PostRepositoryWithLogging,
   })
 
-  const middlewares = middlewareFactory.makeMany(['addPermissionContextMiddleware', 'validateUserMiddleware'])
+  const middlewares = middlewareFactory.makeMany(getPostsHandlerMiddlewares)
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 

@@ -2,6 +2,14 @@ import { Request, Response } from 'express'
 import { RouteHandlerConstructor } from '../middlewares'
 import { GetCommentsUsecase } from '../../../domain/usecases'
 
+export const getPostCommentsHandlerMiddlewares = [
+  'addPermissionContextMiddleware',
+  'validateUserMiddleware',
+  'getPostMiddleware',
+  'getPostMembersMiddleware',
+  'checkPostMembershipMiddleware',
+]
+
 type Params = {
   usecase: GetCommentsUsecase
 }

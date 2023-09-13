@@ -3,19 +3,13 @@ import { withMiddleware } from '../../middlewares'
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
 import { removePostCommentUsecase } from '../../../../domain/usecases/removePostComment'
-import { deletePostCommentHandler } from '../../handlers/deletePostComment'
+import { deletePostCommentHandler, deletePostCommentHandlerMiddlewares } from '../../handlers/deletePostCommentHandler'
 
 export async function makeDeletePostCommentHandler(params?: MakeHandlerParams) {
   const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory } = params!
 
-  const middlewares = middlewareFactory.makeMany([
-    'addPermissionContextMiddleware',
-    'validateUserMiddleware',
-    'getPostMiddleware',
-    'getPostMemberMiddleware',
-    'validatePostMemberMiddleware',
-    'getPostCommentMiddleware',
-  ])
+  const middlewares = middlewareFactory.makeMany(deletePostCommentHandlerMiddlewares)
+
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
   const postCommentRepositoryWithLogging = withLogging(

@@ -12,7 +12,7 @@ declare global {
       getPostMiddlewareResponse?: {
         post: Post
       }
-      getCommentMiddleware?: {
+      getPostCommentMiddlewareResponse?: {
         comment: PostComment
       }
       getPostMembersMiddlewareResponse?: {

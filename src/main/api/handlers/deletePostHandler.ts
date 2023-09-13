@@ -7,6 +7,14 @@ type Params = {
   usecase: RemovePostUsecase
 }
 
+export const deletePostHandlerMiddlewares = [
+  'addPermissionContextMiddleware',
+  'validateUserMiddleware',
+  'getPostMiddleware',
+  'getPostMembersMiddleware',
+  'checkPostMembershipMiddleware',
+]
+
 export const deletePostHandler: RouteHandlerConstructor<Params> =
   (params: Params) => async (req: Request, res: Response) => {
     const { usecase } = params

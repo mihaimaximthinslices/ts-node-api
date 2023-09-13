@@ -3,7 +3,7 @@ import { withLogging } from '../../../../domain/shared'
 import { validateUserUsecase } from '../../../../domain/usecases'
 import { withErrorHandling } from '../errorHandlers'
 
-import { loginHandler } from '../../handlers'
+import { loginHandler, loginHandlerMiddlewares } from '../../handlers'
 import { withMiddleware } from '../../middlewares'
 
 export async function makeLoginHandler(params?: MakeHandlerParams) {
@@ -15,7 +15,7 @@ export async function makeLoginHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
+  const middlewares = middlewareFactory.makeMany(loginHandlerMiddlewares)
 
   const usecase = validateUserUsecase({
     userRepository: UserRepositoryWithLogging,
@@ -25,7 +25,7 @@ export async function makeLoginHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [addPermissionContextMiddleware],
+        middlewares,
         loginHandler({
           usecase,
         }),
