@@ -1,7 +1,13 @@
 import { Post, PostMember, User, PostComment } from '../entities'
 import { DuplicateEntityError, InvalidInputError, UnauthorizedError } from '../errors'
 import { DomainPermissionContext } from './permissionContext'
-export type DomainPermission = 'isPostOwner' | 'isPostMember' | 'canViewPostComment'
+export type DomainPermission =
+  | 'isPostOwner'
+  | 'isPostMember'
+  | 'canViewPostComment'
+  | 'canAddPostMember'
+  | 'canDeletePostMember'
+  | 'arePostMembers'
 export interface DomainPermissionService {
   isPostOwner: (permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]) => void
   canAddPostMember: (
@@ -31,16 +37,22 @@ export interface DomainPermissionService {
 }
 
 class PermissionService implements DomainPermissionService {
-  arePostMembers(post: Post, postMembers: PostMember[]): void {
-    const notMember = postMembers.find((member) => member.postId !== post.id)
+  arePostMembers(permissionContext: DomainPermissionContext, post: Post, postMembers: PostMember[]): void {
+    if (!permissionContext.hasPermission('arePostMembers')) {
+      const notMember = postMembers.find((member) => member.postId !== post.id)
 
-    if (notMember) {
-      throw new InvalidInputError('Not all postMembers are members of the Post')
+      if (notMember) {
+        throw new InvalidInputError('Not all postMembers are members of the Post')
+      }
+      permissionContext.grantPermission('arePostMembers')
     }
   }
-  canDeletePostComment(_permissionContext: DomainPermissionContext, user: User, postComment: PostComment): void {
-    if (user.id !== postComment.userId) {
-      throw new UnauthorizedError('User')
+  canDeletePostComment(permissionContext: DomainPermissionContext, user: User, postComment: PostComment): void {
+    if (!permissionContext.hasPermission('canViewPostComment')) {
+      if (user.id !== postComment.userId) {
+        throw new UnauthorizedError('User')
+      }
+      permissionContext.grantPermission('canViewPostComment')
     }
   }
 
@@ -51,8 +63,9 @@ class PermissionService implements DomainPermissionService {
     postMembers: PostMember[],
     postComment: PostComment,
   ): void {
-    this.isPostMember(permissionContext, user, post, postMembers)
     if (!permissionContext.hasPermission('canViewPostComment')) {
+      this.isPostMember(permissionContext, user, post, postMembers)
+
       if (postComment.postId !== post.id) {
         throw new InvalidInputError('Comment does not belong to the post')
       }
@@ -61,15 +74,18 @@ class PermissionService implements DomainPermissionService {
   }
 
   canDeletePostMember(
-    _permissionContext: DomainPermissionContext,
+    permissionContext: DomainPermissionContext,
     user: User,
     post: Post,
     postMembers: PostMember[],
     postMemberToDelete: PostMember,
   ): void {
-    this.isPostOwner(_permissionContext, user, post, postMembers)
-    if (postMemberToDelete.role === 'OWNER') {
-      throw new InvalidInputError('You cannot remove the owner of the post')
+    if (!permissionContext.hasPermission('canDeletePostMember')) {
+      this.isPostOwner(permissionContext, user, post, postMembers)
+      if (postMemberToDelete.role === 'OWNER') {
+        throw new InvalidInputError('You cannot remove the owner of the post')
+      }
+      permissionContext.grantPermission('canDeletePostMember')
     }
   }
 
@@ -92,49 +108,56 @@ class PermissionService implements DomainPermissionService {
     }
   }
 
-  isPostOwner(_permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]): void {
-    const userId = user.id
+  isPostOwner(permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]): void {
+    if (!permissionContext.hasPermission('isPostOwner')) {
+      const userId = user.id
 
-    if (postMembers.length > 0) {
-      this.arePostMembers(post, postMembers)
-    }
+      if (postMembers.length > 0) {
+        this.arePostMembers(permissionContext, post, postMembers)
+      }
 
-    const userMember = postMembers.find((post) => post.userId === userId)
+      const userMember = postMembers.find((post) => post.userId === userId)
 
-    if (postMembers.length > 0) {
-      if (!userMember) {
+      if (postMembers.length > 0) {
+        if (!userMember) {
+          throw new UnauthorizedError('User')
+        }
+        if (userMember.role !== 'OWNER') {
+          throw new UnauthorizedError('User')
+        }
+      }
+
+      if (user.id !== post.userId) {
         throw new UnauthorizedError('User')
       }
-      if (userMember.role !== 'OWNER') {
-        throw new UnauthorizedError('User')
-      }
-    }
-
-    if (user.id !== post.userId) {
-      throw new UnauthorizedError('User')
+      permissionContext.grantPermission('isPostOwner')
     }
   }
 
   canAddPostMember(
-    _permissionContext: DomainPermissionContext,
+    permissionContext: DomainPermissionContext,
     user: User,
     post: Post,
     postMembers: PostMember[],
     newPostMember: PostMember,
     newPostMemberUser: User,
   ): void {
-    this.isPostOwner(_permissionContext, user, post, postMembers)
-    if (newPostMember.role === 'OWNER' && postMembers.length > 0) {
-      throw new UnauthorizedError('User')
-    }
-    if (newPostMemberUser.id !== newPostMemberUser.id) {
-      throw new InvalidInputError('Post member does not link to any user')
-    }
+    if (!permissionContext.hasPermission('canAddPostMember')) {
+      this.isPostOwner(permissionContext, user, post, postMembers)
 
-    const memberAlreadyExists = postMembers.find((member) => member.userId === user.id)
+      if (newPostMember.role === 'OWNER' && postMembers.length > 0) {
+        throw new UnauthorizedError('User')
+      }
+      if (newPostMemberUser.id !== newPostMemberUser.id) {
+        throw new InvalidInputError('Post member does not link to any user')
+      }
 
-    if (memberAlreadyExists) {
-      throw new DuplicateEntityError('Member was already invited to the post')
+      const memberAlreadyExists = postMembers.find((member) => member.userId === user.id)
+
+      if (memberAlreadyExists) {
+        throw new DuplicateEntityError('Member was already invited to the post')
+      }
+      permissionContext.grantPermission('canAddPostMember')
     }
   }
 }
