@@ -14,10 +14,14 @@ export const checkPostMembershipMiddleware: RouteHandlerConstructor<Params> =
     const post = req.getPostMiddlewareResponse!.post
     const postMembers = req.getPostMembersMiddlewareResponse!.postMembers
 
-    await usecase({
+    const postMember = await usecase({
       permissionContext: req.permissionContext!,
       user,
       post,
       postMembers,
     })
+
+    req.checkPostMembershipMiddlewareResponse = {
+      postMember,
+    }
   }

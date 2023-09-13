@@ -12,12 +12,16 @@ type Request = {
   postMembers: PostMember[]
 }
 
-export type CheckPostMembershipUsecase = UseCase<Request, void>
+export type CheckPostMembershipUsecase = UseCase<Request, PostMember>
 
-export const checkPostMembershipUsecase: UseCaseConstructor<Params, Request, void> = (_params) => {
+export const checkPostMembershipUsecase: UseCaseConstructor<Params, Request, PostMember> = (_params) => {
   return async (request) => {
     const { user, post, postMembers, permissionContext } = request
 
     permissionService.isPostMember(permissionContext, user, post, postMembers)
+
+    const postMember = postMembers.find((member) => member.id === user.id)
+
+    return postMember!
   }
 }

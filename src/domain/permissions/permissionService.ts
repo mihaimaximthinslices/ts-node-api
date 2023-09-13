@@ -12,13 +12,6 @@ export interface DomainPermissionService {
     newPostMember: PostMember,
     newPostMemberUser: User,
   ) => void
-  verifyAndGetPostMember: (
-    permissionContext: DomainPermissionContext,
-    user: User,
-    post: Post,
-    postMembers: PostMember[],
-  ) => PostMember
-  canModifyPost: (permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]) => void
   isPostMember: (permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]) => void
   canDeletePostComment: (permissionContext: DomainPermissionContext, user: User, postComment: PostComment) => void
   canDeletePostMember: (
@@ -45,23 +38,6 @@ class PermissionService implements DomainPermissionService {
       throw new InvalidInputError('Not all postMembers are members of the Post')
     }
   }
-
-  verifyAndGetPostMember(
-    _permissionContext: DomainPermissionContext,
-    user: User,
-    post: Post,
-    postMembers: PostMember[],
-  ): PostMember {
-    this.arePostMembers(post, postMembers)
-
-    const member = postMembers.find((member) => member.userId === user.id)
-    if (!member) {
-      throw new UnauthorizedError('User')
-    }
-
-    return member
-  }
-
   canDeletePostComment(_permissionContext: DomainPermissionContext, user: User, postComment: PostComment): void {
     if (user.id !== postComment.userId) {
       throw new UnauthorizedError('User')
@@ -137,10 +113,6 @@ class PermissionService implements DomainPermissionService {
     if (user.id !== post.userId) {
       throw new UnauthorizedError('User')
     }
-  }
-
-  canModifyPost(_permissionContext: DomainPermissionContext, user: User, post: Post, postMembers: PostMember[]) {
-    this.isPostOwner(_permissionContext, user, post, postMembers)
   }
 
   canAddPostMember(

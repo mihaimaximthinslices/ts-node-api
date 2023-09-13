@@ -18,6 +18,9 @@ declare global {
       getPostMembersMiddlewareResponse?: {
         postMembers: PostMember[]
       }
+      checkPostMembershipMiddlewareResponse?: {
+        postMember: PostMember
+      }
     }
   }
 }
