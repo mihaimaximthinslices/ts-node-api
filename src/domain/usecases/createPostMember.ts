@@ -4,7 +4,7 @@ import { Post, PostMember } from '../entities'
 import { PostMemberRepository } from '../repositories/PostMemberRepository'
 import { permissionService } from '../permissions/permissionService'
 import { UserRepository } from '../repositories'
-import { EntityNotFound } from '../errors'
+import { EntityNotFoundError } from '../errors'
 import { DomainPermissionContext } from '../permissions/permissionContext'
 type Params = {
   uuidGenerator: UuidGenerator
@@ -54,7 +54,7 @@ export const createPostMemberUsecase: UseCaseConstructor<Params, Request, PostMe
     const user = await userRepository.getByEmail(email)
 
     if (!user) {
-      throw new EntityNotFound('User', email)
+      throw new EntityNotFoundError('User', email)
     }
 
     return user

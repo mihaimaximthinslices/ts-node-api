@@ -24,7 +24,7 @@ export class DuplicateEntityError extends Error {
   }
 }
 
-export class EntityNotFound extends Error {
+export class EntityNotFoundError extends Error {
   constructor(entity: string, id?: string) {
     super()
 

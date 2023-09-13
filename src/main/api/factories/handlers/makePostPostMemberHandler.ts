@@ -24,15 +24,13 @@ export async function makePostPostMemberHandler(params?: MakeHandlerParams) {
 
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
-  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
-
-  const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
-
-  const getPostMiddleware = middlewareFactory!.make('getPostMiddleware')
-
-  const getPostMemberMiddleware = middlewareFactory!.make('getPostMemberMiddleware')
-
-  const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
+  const middlewares = middlewareFactory.makeMany([
+    'addPermissionContextMiddleware',
+    'validateUserMiddleware',
+    'getPostMiddleware',
+    'getPostMemberMiddleware',
+    'validatePostMemberMiddleware',
+  ])
 
   const usecase = createPostMemberUsecase({
     uuidGenerator,
@@ -44,13 +42,7 @@ export async function makePostPostMemberHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [
-          addPermissionContextMiddleware,
-          validateUserMiddleware,
-          getPostMiddleware,
-          getPostMemberMiddleware,
-          validatePostMemberMiddleware,
-        ],
+        middlewares,
         postPostMemberHandler({
           usecase,
         }),

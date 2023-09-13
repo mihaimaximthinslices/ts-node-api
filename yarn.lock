@@ -156,6 +156,11 @@
   resolved "https://registry.npmjs.org/@eslint/js/-/js-8.47.0.tgz"
   integrity sha512-P6omY1zv5MItm93kLM8s2vr1HICJH8v0dvddDhysbIuZ+vcjOHg5Zbkf1mTkcmi2JA9oBG2anOkRnW8WJTS8Og==
 
+"@faker-js/faker@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-8.0.2.tgz#bab698c5d3da9c52744e966e0e3eedb6c8b05c37"
+  integrity sha512-Uo3pGspElQW91PCvKSIAXoEgAUlRnH29sX2/p89kg7sP1m2PzCufHINd0FhTXQf6DYGiUlVncdSPa2F9wxed2A==
+
 "@humanwhocodes/config-array@^0.11.10":
   version "0.11.10"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.10.tgz"
@@ -3067,6 +3072,11 @@ ts-api-utils@^1.0.1:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-1.0.2.tgz"
   integrity sha512-Cbu4nIqnEdd+THNEsBdkolnOXhg0I8XteoHaEKgvsxpsbWda4IsUut2c187HxywQCvveojow0Dgw/amxtSKVkQ==
 
+ts-essentials@^9.3.2:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/ts-essentials/-/ts-essentials-9.4.0.tgz#1d841fee4cd1485f84dec82bce828f90a6cfdd92"
+  integrity sha512-s4BzWZmTh926caZO7XF7MMbwCn1BioT3s3r9hT8ARnwW//30OD0XioEsMyq3ORAHP/deN4Zkst2ZvxXmL+tG6g==
+
 ts-node@^10.9.1:
   version "10.9.1"
   resolved "https://registry.npmjs.org/ts-node/-/ts-node-10.9.1.tgz"
@@ -3244,6 +3254,13 @@ vite-node@0.34.2:
     rollup "^3.27.1"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vitest-mock-extended@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/vitest-mock-extended/-/vitest-mock-extended-1.2.1.tgz#fb7107d7cc50e420f7e536d603bc00467c47ef03"
+  integrity sha512-zRiSAR4d44S0XEWgfhnyYkU9Z2a7bo9FiEoh7Qe9qW/Qm+j0Uq9i8paOONpSDwzOe1fxwff8Au5PS5+uBZ06bw==
+  dependencies:
+    ts-essentials "^9.3.2"
 
 vitest@^0.34.2:
   version "0.34.2"

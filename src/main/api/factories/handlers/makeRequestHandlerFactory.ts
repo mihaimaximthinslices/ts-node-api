@@ -12,11 +12,12 @@ import { DomainEventEmitter } from '../../../../domain/events'
 import { makePostPostHandler } from './makePostPostHandler'
 import { makeGetPostHandler } from './makeGetPostHandler'
 import { makePostCommentHandler } from './makePostCommentHandler'
-import { makeGetCommentHandler } from './makeGetCommentHandler'
-import { makeGetCommentsHandler } from './makeGetCommentsHandler'
+import { makeGetPostCommentHandler } from './makeGetPostCommentHandler'
+import { makeGetPostCommentsHandler } from './makeGetPostCommentsHandler'
 import { makePostPostMemberHandler } from './makePostPostMemberHandler'
 import { makeDeletePostHandler } from './makeDeletePostHandler'
 import { makeDeletePostCommentHandler } from './makeDeletePostCommentHandler'
+import { makePatchPostCommentHandler } from './makePatchPostCommentHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
@@ -36,12 +37,13 @@ const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerPar
   postUserHandler: makePostUserHandler,
   postPostHandler: makePostPostHandler,
   getPostHandler: makeGetPostHandler,
-  postCommentHandler: makePostCommentHandler,
-  getCommentHandler: makeGetCommentHandler,
-  getCommentsHandler: makeGetCommentsHandler,
+  postPostCommentHandler: makePostCommentHandler,
+  getPostCommentHandler: makeGetPostCommentHandler,
+  getPostCommentsHandler: makeGetPostCommentsHandler,
   postPostMemberHandler: makePostPostMemberHandler,
   deletePostHandler: makeDeletePostHandler,
   deletePostCommentHandler: makeDeletePostCommentHandler,
+  patchPostCommentHandler: makePatchPostCommentHandler,
 }
 
 export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (

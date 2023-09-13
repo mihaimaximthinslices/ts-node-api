@@ -18,7 +18,7 @@ export async function makeGetPostMemberMiddleware(params?: MakeMiddlewareParams)
     usecase,
   })
 
-  const decoratedMiddleware = withLogging(middleware, logger, 'Middleware', 'validatePostMembershipMiddleware')
+  const decoratedMiddleware = withLogging(middleware, logger, 'Middleware', 'getPostMembersMiddleware')
 
   return decoratedMiddleware
 }

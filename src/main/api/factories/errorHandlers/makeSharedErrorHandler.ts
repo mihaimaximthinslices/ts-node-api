@@ -1,11 +1,16 @@
 import { Response } from 'express'
-import { DuplicateEntityError, EntityNotFound, InvalidInputError, UnauthorizedError } from '../../../../domain/errors'
+import {
+  DuplicateEntityError,
+  EntityNotFoundError,
+  InvalidInputError,
+  UnauthorizedError,
+} from '../../../../domain/errors'
 import { ZodError } from 'zod'
 
 export const makeSharedErrorHandler = (err: Error, res: Response) => {
   if (err instanceof InvalidInputError) {
     res.status(400).json({ error: err.message })
-  } else if (err instanceof EntityNotFound) {
+  } else if (err instanceof EntityNotFoundError) {
     res.status(404).json({ error: err.message })
   } else if (err instanceof UnauthorizedError) {
     res.status(401).json({ error: err.message })

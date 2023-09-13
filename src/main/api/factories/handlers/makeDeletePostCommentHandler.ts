@@ -7,18 +7,15 @@ import { deletePostCommentHandler } from '../../handlers/deletePostComment'
 
 export async function makeDeletePostCommentHandler(params?: MakeHandlerParams) {
   const { middlewareFactory, errorHandlerFactory, logger, repositoryFactory } = params!
-  const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')
 
-  const validateUserMiddleware = middlewareFactory!.make('validateUserMiddleware')
-
-  const getPostMiddleware = middlewareFactory!.make('getPostMiddleware')
-
-  const getPostMemberMiddleware = middlewareFactory!.make('getPostMemberMiddleware')
-
-  const validatePostMemberMiddleware = middlewareFactory!.make('validatePostMemberMiddleware')
-
-  const getPostCommentMiddleware = middlewareFactory!.make('getPostCommentMiddleware')
-
+  const middlewares = middlewareFactory.makeMany([
+    'addPermissionContextMiddleware',
+    'validateUserMiddleware',
+    'getPostMiddleware',
+    'getPostMemberMiddleware',
+    'validatePostMemberMiddleware',
+    'getPostCommentMiddleware',
+  ])
   const sharedErrorHandler = errorHandlerFactory.make('sharedErrorHandler')
 
   const postCommentRepositoryWithLogging = withLogging(
@@ -35,14 +32,7 @@ export async function makeDeletePostCommentHandler(params?: MakeHandlerParams) {
   return withLogging(
     withErrorHandling(
       withMiddleware(
-        [
-          addPermissionContextMiddleware,
-          validateUserMiddleware,
-          getPostMiddleware,
-          getPostMemberMiddleware,
-          validatePostMemberMiddleware,
-          getPostCommentMiddleware,
-        ],
+        middlewares,
         deletePostCommentHandler({
           usecase,
         }),

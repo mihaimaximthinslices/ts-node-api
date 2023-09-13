@@ -1,7 +1,7 @@
 import { UseCase, UseCaseConstructor } from '../shared'
 import { Post, User } from '../entities'
 import { PostRepository } from '../repositories'
-import { EntityNotFound } from '../errors'
+import { EntityNotFoundError } from '../errors'
 
 type Params = {
   postRepository: PostRepository
@@ -22,7 +22,7 @@ export const getPostUsecase: UseCaseConstructor<Params, Request, Post> = (params
     const post = await postRepository.getById(postId)
 
     if (!post) {
-      throw new EntityNotFound('Post', postId)
+      throw new EntityNotFoundError('Post', postId)
     }
 
     return post

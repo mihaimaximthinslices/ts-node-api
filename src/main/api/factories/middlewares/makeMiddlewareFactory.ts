@@ -28,19 +28,28 @@ const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Pro
 }
 
 export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): MiddlewareFactory => {
+  const makeFunction = (name: string) => {
+    const makeHandlerFunction = middlewareFactories[name]
+
+    if (!makeHandlerFunction) throw new Error(`Invalid middleware ${name}`)
+
+    return async (req: Request, res: Response, next: NextFunction) => {
+      const handler = await makeHandlerFunction({
+        ...dependencies,
+      })
+
+      return handler(req, res, next)
+    }
+  }
   return {
-    make: (name: string) => {
-      const makeHandlerFunction = middlewareFactories[name]
-
-      if (!makeHandlerFunction) throw new Error(`Invalid middleware ${name}`)
-
-      return async (req: Request, res: Response, next: NextFunction) => {
-        const handler = await makeHandlerFunction({
-          ...dependencies,
-        })
-
-        return handler(req, res, next)
+    make: makeFunction,
+    makeMany: (names: string[]) => {
+      const middlewares = []
+      for (let i = 0; i < names.length; i++) {
+        const middleware = makeFunction(names[i]!)
+        middlewares.push(middleware)
       }
+      return middlewares
     },
     getMiddlewareNames: () => {
       return Object.keys(middlewareFactories)

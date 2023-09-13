@@ -4,7 +4,7 @@ import { MakeHandlerParams } from './makeRequestHandlerFactory'
 import { withErrorHandling } from '../errorHandlers'
 import { getPostCommentHandler } from '../../handlers'
 
-export async function makeGetCommentHandler(params?: MakeHandlerParams) {
+export async function makeGetPostCommentHandler(params?: MakeHandlerParams) {
   const { middlewareFactory, errorHandlerFactory, logger } = params!
 
   const addPermissionContextMiddleware = middlewareFactory!.make('addPermissionContextMiddleware')

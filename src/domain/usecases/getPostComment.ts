@@ -1,7 +1,7 @@
 import { UseCase, UseCaseConstructor } from '../shared'
 import { PostComment, PostMember, User, Post } from '../entities'
 import { PostCommentRepository } from '../repositories'
-import { EntityNotFound } from '../errors'
+import { EntityNotFoundError } from '../errors'
 import { permissionService } from '../permissions/permissionService'
 import { DomainPermissionContext } from '../permissions/permissionContext'
 
@@ -27,7 +27,7 @@ export const getPostCommentUsecase: UseCaseConstructor<Params, Request, PostComm
     const comment = await postCommentRepository.getById(commentId)
 
     if (!comment) {
-      throw new EntityNotFound('Comment', commentId)
+      throw new EntityNotFoundError('Comment', commentId)
     }
 
     permissionService.canViewPostComment(permissionContext, user, post, postMembers, comment)

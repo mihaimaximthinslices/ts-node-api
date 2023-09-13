@@ -1,7 +1,7 @@
 import { HashMethods, UseCase, UseCaseConstructor } from '../shared'
 import { User } from '../entities'
 import { UserRepository } from '../repositories'
-import { EntityNotFound, UnauthorizedError } from '../errors/errors'
+import { EntityNotFoundError, UnauthorizedError } from '../errors/errors'
 
 type Params = {
   userRepository: UserRepository
@@ -23,7 +23,7 @@ export const validateUserUsecase: UseCaseConstructor<Params, Request, User> = (p
     const user = await userRepository.getByEmail(email)
 
     if (!user) {
-      throw new EntityNotFound('User')
+      throw new EntityNotFoundError('User')
     }
 
     if (password) {
