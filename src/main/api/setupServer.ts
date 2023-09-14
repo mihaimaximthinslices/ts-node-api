@@ -1,6 +1,6 @@
 import { RequestHandlerFactory } from './factories/handlers'
 import express, { Express } from 'express'
-import { withIRequestHandlerAdapter } from './withIRequestHandler'
+import { makeExpressRequestHandlerFactory } from './expressHandlerFactory'
 
 type Params = {
   server: Express
@@ -10,39 +10,26 @@ type Params = {
 export const setupServer = (params: Params) => {
   const { server, requestHandlerFactory } = params
 
+  const handlerFactory = makeExpressRequestHandlerFactory(requestHandlerFactory)
+
   server.use(express.json())
 
-  server.post('/login', withIRequestHandlerAdapter(requestHandlerFactory.make('loginHandler')))
-  server.post('/register', withIRequestHandlerAdapter(requestHandlerFactory.make('postUserHandler')))
-  server.post('/logout', withIRequestHandlerAdapter(requestHandlerFactory.make('logoutHandler')))
+  server.post('/login', handlerFactory.make('loginHandler'))
+  server.post('/register', handlerFactory.make('postUserHandler'))
+  server.post('/logout', handlerFactory.make('logoutHandler'))
 
-  server.get('/posts', withIRequestHandlerAdapter(requestHandlerFactory.make('getPostsHandler')))
-  server.post('/posts', withIRequestHandlerAdapter(requestHandlerFactory.make('postPostHandler')))
+  server.get('/posts', handlerFactory.make('getPostsHandler'))
+  server.post('/posts', handlerFactory.make('postPostHandler'))
 
-  server.get('/posts/:postId', withIRequestHandlerAdapter(requestHandlerFactory.make('getPostHandler')))
-  server.delete('/posts/:postId', withIRequestHandlerAdapter(requestHandlerFactory.make('deletePostHandler')))
+  server.get('/posts/:postId', handlerFactory.make('getPostHandler'))
+  server.delete('/posts/:postId', handlerFactory.make('deletePostHandler'))
 
-  server.post('/posts/:postId/members', withIRequestHandlerAdapter(requestHandlerFactory.make('postPostMemberHandler')))
+  server.post('/posts/:postId/members', handlerFactory.make('postPostMemberHandler'))
 
-  server.get(
-    '/posts/:postId/comments',
-    withIRequestHandlerAdapter(requestHandlerFactory.make('getPostCommentsHandler')),
-  )
-  server.post(
-    '/posts/:postId/comments',
-    withIRequestHandlerAdapter(requestHandlerFactory.make('postPostCommentHandler')),
-  )
+  server.get('/posts/:postId/comments', handlerFactory.make('getPostCommentsHandler'))
+  server.post('/posts/:postId/comments', handlerFactory.make('postPostCommentHandler'))
 
-  server.get(
-    '/posts/:postId/comments/:commentId',
-    withIRequestHandlerAdapter(requestHandlerFactory.make('getPostCommentHandler')),
-  )
-  server.patch(
-    '/posts/:postId/comments/:commentId',
-    withIRequestHandlerAdapter(requestHandlerFactory.make('patchPostCommentHandler')),
-  )
-  server.delete(
-    '/posts/:postId/comments/:commentId',
-    withIRequestHandlerAdapter(requestHandlerFactory.make('deletePostCommentHandler')),
-  )
+  server.get('/posts/:postId/comments/:commentId', handlerFactory.make('getPostCommentHandler'))
+  server.patch('/posts/:postId/comments/:commentId', handlerFactory.make('patchPostCommentHandler'))
+  server.delete('/posts/:postId/comments/:commentId', handlerFactory.make('deletePostCommentHandler'))
 }

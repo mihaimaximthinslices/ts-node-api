@@ -1,7 +1,37 @@
+import { RequestHandlerFactory } from './factories/handlers'
+import { RequestHandler } from 'express'
+
 import { IRequest, IRequestContextStore, ISessionData, ParamsDictionary } from '../../domain/handlers/request'
 import { Request, Response } from 'express'
 import { IResponse } from '../../domain/handlers/response'
 import { IRequestHandler } from '../../domain/handlers/requestHandler'
+
+declare module 'express-session' {
+  interface SessionData {
+    data: ISessionData
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      reqContext: IRequestContextStore
+    }
+  }
+}
+export interface ExpressRequestHandlerFactory {
+  make: (name: string) => RequestHandler
+}
+
+export const makeExpressRequestHandlerFactory = (
+  requestHandlerFactory: RequestHandlerFactory,
+): ExpressRequestHandlerFactory => {
+  return {
+    make: (name) => {
+      return withExpressRequestHandlerAdapter(requestHandlerFactory.make(name))
+    },
+  }
+}
 
 declare module 'express-session' {
   interface SessionData {
@@ -68,7 +98,7 @@ const buildRes = (expressRes: Response): IResponse => {
   return res
 }
 
-export const withIRequestHandlerAdapter = (handler: IRequestHandler) => {
+const withExpressRequestHandlerAdapter = (handler: IRequestHandler) => {
   return async (req: Request, res: Response) => {
     return handler(buildReq(req), buildRes(res))
   }
