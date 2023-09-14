@@ -1,15 +1,16 @@
-import { Request, Response } from 'express'
 import { GetPostUsecase } from '../../../domain/usecases'
 import { RouteHandlerConstructor } from './types'
 import { InvalidInputError } from '../../../domain/errors'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: GetPostUsecase
 }
 
 export const getPostMiddleware: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, _res: Response) => {
-    const { postId } = req.params
+  (params: Params) => async (req: IRequest, _res: IResponse) => {
+    const { postId } = req.getPathParams()
 
     if (!postId) {
       throw new InvalidInputError('postId query param is required')
@@ -17,12 +18,18 @@ export const getPostMiddleware: RouteHandlerConstructor<Params> =
 
     const { usecase } = params
 
+    const { validateUserMiddlewareResponse } = req.getRequestContextStore()
+
     const post = await usecase({
-      user: req.validateUserMiddlewareResponse!.user,
+      user: validateUserMiddlewareResponse!.user,
       postId,
     })
 
-    req.getPostMiddlewareResponse = {
+    const requestContextStore = req.getRequestContextStore()
+
+    requestContextStore.getPostMiddlewareResponse = {
       post,
     }
+
+    req.setRequestContextStore(requestContextStore)
   }

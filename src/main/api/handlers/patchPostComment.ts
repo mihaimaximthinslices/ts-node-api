@@ -1,19 +1,20 @@
 import { RouteHandlerConstructor } from '../middlewares'
-import { Request, Response } from 'express'
 import { InvalidInputError } from '../../../domain/errors'
 import { UpdatePostCommentUsecase } from '../../../domain/usecases/updatePostComment'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: UpdatePostCommentUsecase
 }
 export const patchPostCommentHandlerMiddlewares = ['addPermissionContextMiddleware', 'validateUserMiddleware']
 export const patchPostCommentHandler: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, res: Response) => {
+  (params: Params) => async (req: IRequest, res: IResponse) => {
     const { usecase } = params
 
-    const { postId, commentId } = req.params
+    const { postId, commentId } = req.getPathParams()
 
-    const { text } = req.body
+    const { text } = req.getBody()
 
     if (!postId) {
       throw new InvalidInputError('postId param is required')
@@ -22,12 +23,14 @@ export const patchPostCommentHandler: RouteHandlerConstructor<Params> =
       throw new InvalidInputError('commentId param is required')
     }
 
+    const { validateUserMiddlewareResponse } = req.getRequestContextStore()
+
     const response = await usecase({
-      user: req.validateUserMiddlewareResponse!.user,
+      user: validateUserMiddlewareResponse!.user,
       postId,
       commentId,
       text,
     })
 
-    return res.status(204).json(response)
+    return res.sendJsonResponse(204, response)
   }

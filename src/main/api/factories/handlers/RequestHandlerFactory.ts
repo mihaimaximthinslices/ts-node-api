@@ -1,9 +1,8 @@
-import { RequestHandler } from 'express'
-
 import { MakeHandlerParams } from './makeRequestHandlerFactory'
+import { IRequestHandler } from '../../../../domain/handlers/requestHandler'
 
 export interface RequestHandlerFactory {
-  make: (name: string) => RequestHandler
+  make: (name: string) => IRequestHandler
   getHandlerNames: () => string[]
 }
 

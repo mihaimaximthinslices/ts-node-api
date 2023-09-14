@@ -1,15 +1,17 @@
-import { Request, Response } from 'express'
 import { ValidateUserUsecase } from '../../../domain/usecases'
 import { RouteHandlerConstructor } from './types'
 import { UnauthorizedError } from '../../../domain/errors'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: ValidateUserUsecase
 }
 
 export const validateUserMiddleware: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, _res: Response) => {
-    const sessionUser = req.session.user
+  (params: Params) => async (req: IRequest, _res: IResponse) => {
+    const sessionData = req.getSessionData()
+    const { user: sessionUser } = sessionData
 
     if (!sessionUser) {
       throw new UnauthorizedError('User')
@@ -23,7 +25,11 @@ export const validateUserMiddleware: RouteHandlerConstructor<Params> =
       email,
     })
 
-    req.validateUserMiddlewareResponse = {
+    const requestContextStore = req.getRequestContextStore()
+
+    requestContextStore.validateUserMiddlewareResponse = {
       user,
     }
+
+    req.setRequestContextStore(requestContextStore)
   }

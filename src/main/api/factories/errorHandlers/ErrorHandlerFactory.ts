@@ -1,6 +1,6 @@
-import { Response } from 'express'
+import { IResponse } from '../../../../domain/handlers/response'
 
 export interface ErrorHandlerFactory {
-  make: (name: string) => (err: Error, res: Response) => void
+  make: (name: string) => (err: Error, res: IResponse) => void
   getErrorHandlerNames: () => string[]
 }

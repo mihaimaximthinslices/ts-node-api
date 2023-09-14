@@ -1,8 +1,8 @@
-import { Response } from 'express'
 import { ErrorHandlerFactory } from './ErrorHandlerFactory'
 import { makeSharedErrorHandler } from './makeSharedErrorHandler'
+import { IResponse } from '../../../../domain/handlers/response'
 
-const errorHandlerFactories: Record<string, (err: Error, res: Response) => void> = {
+const errorHandlerFactories: Record<string, (err: Error, res: IResponse) => void> = {
   sharedErrorHandler: makeSharedErrorHandler,
 }
 

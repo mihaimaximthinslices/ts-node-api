@@ -1,5 +1,4 @@
 import { makeGetPostsHandler } from './makeGetPostsHandler'
-import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { MakeRequestHandlerFactory, RequestHandlerFactory } from './RequestHandlerFactory'
 import { MiddlewareFactory } from '../middlewares'
 import { ErrorHandlerFactory } from '../errorHandlers'
@@ -18,6 +17,9 @@ import { makePostPostMemberHandler } from './makePostPostMemberHandler'
 import { makeDeletePostHandler } from './makeDeletePostHandler'
 import { makeDeletePostCommentHandler } from './makeDeletePostCommentHandler'
 import { makePatchPostCommentHandler } from './makePatchPostCommentHandler'
+import { IResponse } from '../../../../domain/handlers/response'
+import { IRequest } from '../../../../domain/handlers/request'
+import { IRequestHandler } from '../../../../domain/handlers/requestHandler'
 
 export type MakeHandlerParams = {
   middlewareFactory: MiddlewareFactory
@@ -30,7 +32,7 @@ export type MakeHandlerParams = {
   domainEventEmitter: DomainEventEmitter
 }
 
-const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerParams) => Promise<RequestHandler>> = {
+const requestHandlerFactories: Record<string, (MakeHandlerParams: MakeHandlerParams) => Promise<IRequestHandler>> = {
   getPostsHandler: makeGetPostsHandler,
   loginHandler: makeLoginHandler,
   logoutHandler: makeLogoutHandler,
@@ -55,12 +57,12 @@ export const makeRequestHandlerFactory: MakeRequestHandlerFactory = (
 
       if (!makeHandlerFunction) throw new Error('Invalid handler')
 
-      return async (req: Request, res: Response, next: NextFunction) => {
+      return async (req: IRequest, res: IResponse) => {
         const handler = await makeHandlerFunction({
           ...dependencies,
         })
 
-        return handler(req, res, next)
+        return handler(req, res)
       }
     },
     getHandlerNames: () => {
