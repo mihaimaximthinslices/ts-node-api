@@ -47,12 +47,9 @@ class PermissionService implements DomainPermissionService {
       permissionContext.grantPermission('arePostMembers')
     }
   }
-  canDeletePostComment(permissionContext: DomainPermissionContext, user: User, postComment: PostComment): void {
-    if (!permissionContext.hasPermission('canViewPostComment')) {
-      if (user.id !== postComment.userId) {
-        throw new UnauthorizedError('User')
-      }
-      permissionContext.grantPermission('canViewPostComment')
+  canDeletePostComment(_permissionContext: DomainPermissionContext, user: User, postComment: PostComment): void {
+    if (user.id !== postComment.userId) {
+      throw new UnauthorizedError('User')
     }
   }
 
@@ -63,13 +60,10 @@ class PermissionService implements DomainPermissionService {
     postMembers: PostMember[],
     postComment: PostComment,
   ): void {
-    if (!permissionContext.hasPermission('canViewPostComment')) {
-      this.isPostMember(permissionContext, user, post, postMembers)
+    this.isPostMember(permissionContext, user, post, postMembers)
 
-      if (postComment.postId !== post.id) {
-        throw new InvalidInputError('Comment does not belong to the post')
-      }
-      permissionContext.grantPermission('canViewPostComment')
+    if (postComment.postId !== post.id) {
+      throw new InvalidInputError('Comment does not belong to the post')
     }
   }
 
@@ -80,12 +74,9 @@ class PermissionService implements DomainPermissionService {
     postMembers: PostMember[],
     postMemberToDelete: PostMember,
   ): void {
-    if (!permissionContext.hasPermission('canDeletePostMember')) {
-      this.isPostOwner(permissionContext, user, post, postMembers)
-      if (postMemberToDelete.role === 'OWNER') {
-        throw new InvalidInputError('You cannot remove the owner of the post')
-      }
-      permissionContext.grantPermission('canDeletePostMember')
+    this.isPostOwner(permissionContext, user, post, postMembers)
+    if (postMemberToDelete.role === 'OWNER') {
+      throw new InvalidInputError('You cannot remove the owner of the post')
     }
   }
 
@@ -142,22 +133,19 @@ class PermissionService implements DomainPermissionService {
     newPostMember: PostMember,
     newPostMemberUser: User,
   ): void {
-    if (!permissionContext.hasPermission('canAddPostMember')) {
-      this.isPostOwner(permissionContext, user, post, postMembers)
+    this.isPostOwner(permissionContext, user, post, postMembers)
 
-      if (newPostMember.role === 'OWNER' && postMembers.length > 0) {
-        throw new UnauthorizedError('User')
-      }
-      if (newPostMemberUser.id !== newPostMemberUser.id) {
-        throw new InvalidInputError('Post member does not link to any user')
-      }
+    if (newPostMember.role === 'OWNER' && postMembers.length > 0) {
+      throw new UnauthorizedError('User')
+    }
+    if (newPostMemberUser.id !== newPostMember.userId) {
+      throw new InvalidInputError('Post member does not link to any user')
+    }
 
-      const memberAlreadyExists = postMembers.find((member) => member.userId === user.id)
+    const memberAlreadyExists = postMembers.find((member) => member.userId === user.id)
 
-      if (memberAlreadyExists) {
-        throw new DuplicateEntityError('Member was already invited to the post')
-      }
-      permissionContext.grantPermission('canAddPostMember')
+    if (memberAlreadyExists) {
+      throw new DuplicateEntityError('Member was already invited to the post')
     }
   }
 }
