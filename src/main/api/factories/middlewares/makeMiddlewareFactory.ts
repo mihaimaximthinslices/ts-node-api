@@ -1,4 +1,3 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { MiddlewareFactory } from './MiddlewareFactory'
 import { makeValidateUserMiddleware } from './makeValidateUserMiddleware'
 import { ErrorHandlerFactory } from '../errorHandlers'
@@ -10,6 +9,9 @@ import { makeGetPostCommentMiddleware } from './makeGetPostCommentMiddleware'
 import { makeGetPostMembersMiddleware } from './makeGetPostMembersMiddleware'
 import { makeCheckPostMembershipMiddleware } from './makeCheckPostMembershipMiddleware'
 import { makeAddPermissionContextMiddleware } from './makeAddPermissionContextMiddleware'
+import { IRequestHandler } from '../../../../domain/handlers/requestHandler'
+import { IRequest } from '../../../../domain/handlers/request'
+import { IResponse } from '../../../../domain/handlers/response'
 
 export type MakeMiddlewareParams = {
   errorHandlerFactory: ErrorHandlerFactory
@@ -18,7 +20,7 @@ export type MakeMiddlewareParams = {
   hashMethods: HashMethods
   domainEventEmitter: DomainEventEmitter
 }
-const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<RequestHandler>> = {
+const middlewareFactories: Record<string, (params?: MakeMiddlewareParams) => Promise<IRequestHandler>> = {
   addPermissionContextMiddleware: makeAddPermissionContextMiddleware,
   validateUserMiddleware: makeValidateUserMiddleware,
   getPostMiddleware: makeGetPostMiddleware,
@@ -33,12 +35,12 @@ export const makeMiddlewareFactory = (dependencies: MakeMiddlewareParams): Middl
 
     if (!makeHandlerFunction) throw new Error(`Invalid middleware ${name}`)
 
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: IRequest, res: IResponse) => {
       const handler = await makeHandlerFunction({
         ...dependencies,
       })
 
-      return handler(req, res, next)
+      return handler(req, res)
     }
   }
   return {

@@ -1,28 +1,12 @@
-import { RequestHandler } from 'express'
-import { Post, User, PostComment, PostMember } from '../../../domain/entities'
-import { DomainPermissionContext } from '../../../domain/permissions/permissionContext'
+import { IRequestContextStore } from '../../../domain/handlers/request'
+import { IRequestHandler } from '../../../domain/handlers/requestHandler'
 
 declare global {
   namespace Express {
     interface Request {
-      permissionContext: DomainPermissionContext
-      validateUserMiddlewareResponse?: {
-        user: User
-      }
-      getPostMiddlewareResponse?: {
-        post: Post
-      }
-      getPostCommentMiddlewareResponse?: {
-        comment: PostComment
-      }
-      getPostMembersMiddlewareResponse?: {
-        postMembers: PostMember[]
-      }
-      checkPostMembershipMiddlewareResponse?: {
-        postMember: PostMember
-      }
+      reqContext: IRequestContextStore
     }
   }
 }
 
-export type RouteHandlerConstructor<T> = (params: T) => RequestHandler
+export type RouteHandlerConstructor<T> = (params: T) => IRequestHandler

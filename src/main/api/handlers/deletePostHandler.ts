@@ -1,7 +1,8 @@
 import { RouteHandlerConstructor } from '../middlewares'
-import { Request, Response } from 'express'
 import { RemovePostUsecase } from '../../../domain/usecases/removePost'
 import { InvalidInputError } from '../../../domain/errors'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: RemovePostUsecase
@@ -16,21 +17,28 @@ export const deletePostHandlerMiddlewares = [
 ]
 
 export const deletePostHandler: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, res: Response) => {
+  (params: Params) => async (req: IRequest, res: IResponse) => {
     const { usecase } = params
 
-    const { postId } = req.params
+    const { postId } = req.getPathParams()
 
     if (!postId) {
       throw new InvalidInputError('postId query params is required')
     }
 
+    const {
+      permissionContext,
+      validateUserMiddlewareResponse,
+      getPostMiddlewareResponse,
+      getPostMembersMiddlewareResponse,
+    } = req.getRequestContextStore()
+
     const response = await usecase({
-      permissionContext: req.permissionContext!,
-      user: req.validateUserMiddlewareResponse!.user,
-      post: req.getPostMiddlewareResponse!.post,
-      postMembers: req.getPostMembersMiddlewareResponse!.postMembers,
+      permissionContext: permissionContext!,
+      user: validateUserMiddlewareResponse!.user,
+      post: getPostMiddlewareResponse!.post,
+      postMembers: getPostMembersMiddlewareResponse!.postMembers,
     })
 
-    return res.status(204).json(response)
+    return res.sendJsonResponse(204, response)
   }

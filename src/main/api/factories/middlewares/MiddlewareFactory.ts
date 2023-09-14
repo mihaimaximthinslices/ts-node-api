@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express'
+import { IRequestHandler } from '../../../../domain/handlers/requestHandler'
 
 export interface MiddlewareFactory {
-  make: (name: string) => RequestHandler
-  makeMany: (name: string[]) => RequestHandler[]
+  make: (name: string) => IRequestHandler
+  makeMany: (name: string[]) => IRequestHandler[]
   getMiddlewareNames: () => string[]
 }

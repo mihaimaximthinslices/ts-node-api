@@ -1,29 +1,36 @@
 import { CreateUserUsecase } from '../../../domain/usecases'
 import { RouteHandlerConstructor } from '../middlewares'
-import { Request, Response } from 'express'
 import { InvalidInputError } from '../../../domain/errors'
 import { registrationSchema } from '../../shared/validationSchemas'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: CreateUserUsecase
 }
 export const postUserHandlerMiddlewares = ['addPermissionContextMiddleware']
 export const postUserHandler: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, res: Response) => {
+  (params: Params) => async (req: IRequest, res: IResponse) => {
     const { usecase } = params
 
-    if (req.session.user) {
+    const sessionData = req.getSessionData()
+
+    const { user: sessionUser } = sessionData
+
+    if (sessionUser) {
       throw new InvalidInputError('You cannot create an account if you are logged in')
     }
 
-    const { email, password, username } = registrationSchema.parse(req.body)
+    const { email, password, username } = registrationSchema.parse(req.getBody())
+
+    const { permissionContext } = req.getRequestContextStore()
 
     const response = await usecase({
-      permissionContext: req.permissionContext!,
+      permissionContext: permissionContext!,
       email,
       password,
       username,
     })
 
-    return res.status(200).json(response)
+    return res.sendJsonResponse(200, response)
   }

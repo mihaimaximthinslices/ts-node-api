@@ -1,7 +1,8 @@
 import { RouteHandlerConstructor } from '../middlewares'
-import { Request, Response } from 'express'
 import { createPostSchema } from '../../shared/validationSchemas'
 import { CreatePostUsecase } from '../../../domain/usecases'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = {
   usecase: CreatePostUsecase
@@ -9,17 +10,19 @@ type Params = {
 export const postPostHandlerMiddlewares = ['addPermissionContextMiddleware', 'validateUserMiddleware']
 
 export const postPostHandler: RouteHandlerConstructor<Params> =
-  (params: Params) => async (req: Request, res: Response) => {
+  (params: Params) => async (req: IRequest, res: IResponse) => {
     const { usecase } = params
 
-    const { title, description } = createPostSchema.parse(req.body)
+    const { title, description } = createPostSchema.parse(req.getBody())
+
+    const { permissionContext, validateUserMiddlewareResponse } = req.getRequestContextStore()
 
     const response = await usecase({
-      permissionContext: req.permissionContext!,
+      permissionContext: permissionContext!,
       title,
       description,
-      user: req.validateUserMiddlewareResponse!.user,
+      user: validateUserMiddlewareResponse!.user,
     })
 
-    return res.status(201).json(response)
+    return res.sendJsonResponse(201, response)
   }

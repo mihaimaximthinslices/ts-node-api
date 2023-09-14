@@ -8,13 +8,13 @@ import { ErrorHandlerFactory, makeErrorHandlerFactory } from './main/api/factori
 import { makePrismaRepositoryFactory } from './main/api/factories/repositories/makeRepositoryFactory'
 import { makeMiddlewareFactory, MakeMiddlewareParams } from './main/api/factories/middlewares'
 import { makeConsoleLogger } from './main/api/factories/loggers'
-import { User } from './domain/entities'
 import { makeDateGenerator } from './main/api/factories/generators'
 import { makeUuidGenerator } from './main/api/factories/generators/uuidGenerator'
 import { makeHashMethods } from './main/api/factories/hashMethods/makeHashMethods'
 import { RepositoryFactory } from './main/api/factories/repositories/RepositoryFactory'
 import { DateGenerator, HashMethods, Logger, UuidGenerator } from './domain/shared'
 import { ConcreteEventEmitter } from './main/api/factories/events/makeDomainEventEmitter'
+import { ISessionData } from './domain/handlers/request'
 
 const prodServer = express()
 
@@ -39,7 +39,7 @@ prodServer.use(
 
 declare module 'express-session' {
   interface SessionData {
-    user: User
+    data: ISessionData
   }
 }
 

@@ -1,5 +1,6 @@
-import { Request, Response } from 'express'
 import { RouteHandlerConstructor } from '../middlewares'
+import { IRequest } from '../../../domain/handlers/request'
+import { IResponse } from '../../../domain/handlers/response'
 
 type Params = void
 export const getPostHandlerMiddlewares = [
@@ -11,6 +12,7 @@ export const getPostHandlerMiddlewares = [
 ]
 
 export const getPostHandler: RouteHandlerConstructor<Params> =
-  (_params: Params) => async (req: Request, res: Response) => {
-    return res.status(200).json(req.getPostMiddlewareResponse!.post!)
+  (_params: Params) => async (req: IRequest, res: IResponse) => {
+    const { getPostMiddlewareResponse } = req.getRequestContextStore()
+    return res.sendJsonResponse(200, getPostMiddlewareResponse!.post)
   }

@@ -30,7 +30,10 @@ export const withLoggingFunction: WithLogging =
   (func) =>
   async (...args) => {
     try {
-      logger.info(`${component} ${handler} was invoked ${getJSONStringifiedRequest(args)}`)
+      const ignoredArgs = ['Middleware', 'Handler']
+      logger.info(
+        `${component} ${handler} was invoked ${ignoredArgs.includes(component) ? '' : getJSONStringifiedRequest(args)}`,
+      )
 
       const result = await func(...args)
 
